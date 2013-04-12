@@ -1,4 +1,4 @@
-package state;
+package loadbalance;
 
 
 public class Adaptor {
