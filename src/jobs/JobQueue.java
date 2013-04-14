@@ -35,4 +35,10 @@ public class JobQueue {
             return jobList.isEmpty();
         }
     }
+
+    public Integer size() {
+        synchronized (this) {
+            return jobList.size();
+        }
+    }
 }
