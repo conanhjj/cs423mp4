@@ -56,12 +56,14 @@ public class WorkerThread {
         Util.sleep(2000);
     }
 
-    private void executeJob(String command) {
+    private static void executeJob(String command) {
         try {
             List<String> cmds = new LinkedList<String>();
-            cmds.add("sh");
-            cmds.add("-c");
-            cmds.add(command);
+//            cmds.add("sh");
+//            cmds.add("-c");
+            cmds.add("./" + command);
+
+            System.out.println(cmds.toString());
 
             ProcessBuilder pb = new ProcessBuilder(cmds);
             Process p = pb.start();
@@ -70,6 +72,7 @@ public class WorkerThread {
             String lineStr;
 
             while((lineStr = br.readLine()) != null) {
+                System.out.println(111);
                 System.out.println(lineStr);
             }
 
@@ -96,5 +99,14 @@ public class WorkerThread {
         synchronized (this) {
             return jobQueue.isEmpty();
         }
+    }
+
+    public static void main(String[] args) {
+        Job job = new Job("test");
+        job.loadJobFromFile();
+        job.saveJobToFile();
+
+
+        executeJob(job.getExecuteName());
     }
 }
