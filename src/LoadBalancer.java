@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Scanner;
 
+import loadbalance.Adaptor;
+
 public class LoadBalancer {
 
     private static Logger logger = Logger.getLogger(LoadBalancer.class);
@@ -80,6 +82,7 @@ public class LoadBalancer {
         logger.info("Load "+ CommandMap.size() + " command(s) successfully");
 
         //TODO: put all your init code here
+        new Adaptor();
         logger.info("Program initializes successfully");
         System.out.println("--------------------------------------------");
     }

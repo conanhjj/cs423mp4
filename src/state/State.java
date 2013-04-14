@@ -7,7 +7,10 @@ public class State implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3615574645159464691L;
+	/**
+	 * 
+	 */
 	
 	public int job_queue_length;
 	public int throttling;

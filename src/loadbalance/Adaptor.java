@@ -1,5 +1,7 @@
 package loadbalance;
 
+import policy.SenderInitTransferPolicy;
+import policy.TransferPolicy;
 import jobs.Job;
 import jobs.TransferManager;
 import jobs.WorkerThread;
@@ -25,16 +27,40 @@ public class Adaptor {
 		workerThread.start();
 	}
 	
-	// Sender Init
-	public void checkForSenderInit(){
-		int polling = 0;
-		if(state.job_queue_length > THRESHOLD){
-			while(polling++ < POLL_LIM){
-				// Choose node randomly
+	public class TransferChecker extends Thread {
+		private int SLEEP_TIME;
+		
+		public TransferChecker(){
+			SLEEP_TIME = 1000;
+		}
+		
+		public TransferChecker(int sleep_time){
+			this.SLEEP_TIME = sleep_time;
+		}
+		
+		public void checkForAvailbleTransfer(){
+			TransferPolicy transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueueSize()));
+			if(transferPolicy.isTransferable()){
+				
 				if(remoteState.job_queue_length < THRESHOLD){
 					Job job = workerThread.getJobQueue().pop();
 					if(job != null)
 						transferManager.sendJob(job);
+				}
+				//if(node != null)
+				//transferManager.sendJob(job);
+			}
+		}
+		
+		@Override
+		public void run() {
+			while(true){
+				this.checkForAvailbleTransfer();
+				try {
+					sleep(this.SLEEP_TIME);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}

@@ -23,11 +23,15 @@ public class StateManager {
 	private State remoteState;
 	private LoopSender loopSender;
 	private Listener listener;
-	final private String HOSTNAME = "10.10.10.1";
 	final private int PORT_NO = 4567;
 	
-	public StateManager(){
+	public StateManager(int interval) {
+		this.interval = interval;
 		new ServerListener(this);
+	}
+	
+	public StateManager(){
+		this(10000);
 	}
 	
 	public synchronized void setState(State state){
@@ -52,11 +56,6 @@ public class StateManager {
 	
 	public State getRemoteState(){
 		return this.remoteState;
-	}
-	
-	public StateManager(int interval) {
-		this.interval = interval;
-		this.loopSender = new LoopSender(this);
 	}
 	
 	public class LoopSender extends Thread {

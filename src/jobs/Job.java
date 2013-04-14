@@ -9,7 +9,12 @@ import java.util.UUID;
  */
 public class Job implements Serializable {
 
-    public byte version = 100;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6212756222960044811L;
+
+	public byte version = 100;
 
     private JobResult jobResult;
 
