@@ -27,7 +27,7 @@ public class WorkerThread {
         suspend = false;
     }
 
-    public void run() {
+    public void start() {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -45,6 +45,7 @@ public class WorkerThread {
                 }
             }
         });
+        thread.start();
     }
 
     public void stop() {
