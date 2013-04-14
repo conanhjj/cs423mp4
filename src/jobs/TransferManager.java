@@ -3,8 +3,12 @@ package jobs;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import state.StateManager;
+import state.StateManager.LoopSender;
 
 /*
  * Transfer Manager: The Transfer Manager is responsible of performing a load transfer 
@@ -15,22 +19,11 @@ import java.net.UnknownHostException;
 
 public class TransferManager {
 	public Socket socket;
-	public String hostname;
-	public Listener listener;
-	public int port;
+	private Listener listener;
+	final private int PORT_NO = 5678;
 	
 	public TransferManager(){
-		hostname = "10.10.10.1";
-		port = 4567;
-
-		try {    
-			socket = new Socket(hostname, port);
-			listener = new Listener(this);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		new ServerListener(this);
 	}
 	
 	public void sendJob(Job job){
@@ -78,6 +71,26 @@ public class TransferManager {
 					e.printStackTrace();
 				}  
 			}
+		}
+	}
+	
+	public class ServerListener extends Thread {
+		TransferManager transferManager;
+		public ServerListener(TransferManager tm){
+			this.transferManager = tm;
+			start();
+			Thread.yield();
+		}
+		public void run() {
+			try {    
+				ServerSocket serverSocket = new ServerSocket(PORT_NO);
+				socket = serverSocket.accept();
+				listener = new Listener(transferManager);
+	        } catch (UnknownHostException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
 		}
 	}
 }

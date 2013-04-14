@@ -10,7 +10,8 @@ public class HardwareMonitor {
 	/*
 	 * ref: http://stackoverflow.com/questions/5907519/measure-cpu-usage-of-the-jvm-java-code
 	 */
-	public static double getCpuUtilzation(){
+	
+	private static double getCpuUtilzation(){
 		
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
