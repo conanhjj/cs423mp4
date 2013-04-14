@@ -105,6 +105,10 @@ public class WorkerThread {
         }
     }
 
+    public JobQueue getJobQueue() {
+        return jobQueue;
+    }
+
     public static void main(String[] args) {
         Job job = new Job("test");
         job.loadJobFromFile();
