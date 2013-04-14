@@ -16,6 +16,7 @@ public class WorkerThread {
     private JobQueue jobQueue;
 
     private boolean stopWork;
+    private boolean suspend;
 
     private static Long NO_JOB_SLEEP_INTERVAL = 2000L;
     private static Long FINISH_SLEEP_INTERVAL = 1000L;
@@ -23,6 +24,7 @@ public class WorkerThread {
     public WorkerThread() {
         jobQueue = new JobQueue();
         stopWork = false;
+        suspend = false;
     }
 
     public void run() {
@@ -35,8 +37,10 @@ public class WorkerThread {
                         continue;
                     }
 
-                    Job job = jobQueue.pop();
-                    executeJob(job);
+                    if(!suspend) {
+                        Job job = jobQueue.pop();
+                        executeJob(job);
+                    }
                     Util.sleep(FINISH_SLEEP_INTERVAL);
                 }
             }
@@ -44,8 +48,22 @@ public class WorkerThread {
     }
 
     public void stop() {
+        stopWork = true;
+    }
+
+    /**
+     * This method will suspend the worker thread. However, it wont' stop running
+     * the current job.
+     */
+    public void suspend() {
         synchronized (this) {
-            stopWork = true;
+            suspend = true;
+        }
+    }
+
+    public void resume() {
+        synchronized (this) {
+            suspend = false;
         }
     }
 
@@ -107,6 +125,10 @@ public class WorkerThread {
 
     public JobQueue getJobQueue() {
         return jobQueue;
+    }
+
+    public Integer getJobQueueSize() {
+        return jobQueue.size();
     }
 
     public static void main(String[] args) {

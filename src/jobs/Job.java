@@ -16,6 +16,7 @@ public class Job implements Serializable {
     private String fileName;
     private byte[] binaryCode;
     private Integer jobSize;
+    private boolean loadedToMemory;
 
     private static Integer MAX_JOB_SIZE = 65536;
 
@@ -30,9 +31,9 @@ public class Job implements Serializable {
     public Job(String fileName) {
         this.fileName = fileName;
         jobId = UUID.randomUUID();
-
         jobResult = new JobResult();
         binaryCode = new byte[MAX_JOB_SIZE];
+        loadedToMemory = false;
     }
 
     public String getExecuteName() {
@@ -52,6 +53,7 @@ public class Job implements Serializable {
                 return false;
             }
             dis.close();
+            loadedToMemory  = true;
             return true;
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -63,6 +65,11 @@ public class Job implements Serializable {
 
 
     public boolean saveJobToFile() {
+        if(!loadedToMemory) {
+            System.out.println("Job has not been loaded to memory yet");
+            return false;
+        }
+
         File file = new File(getExecuteName());
         DataOutputStream dos;
         try {
