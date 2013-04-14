@@ -20,13 +20,19 @@ public class JobQueue {
 
     public Job peek() {
         synchronized (this) {
-            return jobList.get(0);
+            if(isEmpty())
+                return null;
+            else
+                return jobList.get(0);
         }
     }
 
     public Job pop() {
         synchronized (this) {
-            return jobList.remove(0);
+            if(isEmpty())
+                return null;
+            else
+                return jobList.remove(0);
         }
     }
 
@@ -40,5 +46,11 @@ public class JobQueue {
         synchronized (this) {
             return jobList.size();
         }
+    }
+
+    public static void main(String[] args) {
+        JobQueue jobQueue = new JobQueue();
+        Job job = jobQueue.pop();
+        System.out.println(job);
     }
 }
