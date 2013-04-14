@@ -2,14 +2,16 @@ package jobs;
 
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * Job: This is class for Job. It contains Job's binary code, and can be serialized.
+ */
 public class Job implements Serializable {
 
     public byte version = 100;
 
-    private JobResult result;
+    private JobResult jobResult;
 
     private String fileName;
     private byte[] binaryCode;
@@ -29,6 +31,7 @@ public class Job implements Serializable {
         this.fileName = fileName;
         jobId = UUID.randomUUID();
 
+        jobResult = new JobResult();
         binaryCode = new byte[MAX_JOB_SIZE];
     }
 
@@ -78,6 +81,14 @@ public class Job implements Serializable {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void setJobResult(String result) {
+        jobResult.setResult(result);
+    }
+
+    public String getID () {
+        return jobId.toString();
     }
 
     /**

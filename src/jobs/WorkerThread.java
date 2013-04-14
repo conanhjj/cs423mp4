@@ -51,12 +51,16 @@ public class WorkerThread {
 
     public void executeJob(Job job) {
         //TODO: fake code
-
-
+        String result = execute(job.getExecuteName());
+        if(result != null) {
+            job.setJobResult(result);
+        } else {
+            System.out.println("There is no result for job");
+        }
         Util.sleep(2000);
     }
 
-    private static void executeJob(String command) {
+    private static String execute(String command) {
         try {
             List<String> cmds = new LinkedList<String>();
 //            cmds.add("sh");
@@ -70,23 +74,23 @@ public class WorkerThread {
             BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(p.getInputStream())));
 
             String lineStr;
-
             while((lineStr = br.readLine()) != null) {
-                System.out.println(111);
                 System.out.println(lineStr);
             }
-
             if(p.waitFor() != 0) {
                 if(p.exitValue() == 1) {
                     System.err.println("Job Execute error");
                 }
             }
 
+            return lineStr;
+
         } catch (IOException ex) {
             System.err.println(ex);
         } catch (InterruptedException ex) {
             System.err.println(ex);
         }
+        return null;
     }
 
     public void addJob(Job job) {
@@ -107,6 +111,6 @@ public class WorkerThread {
         job.saveJobToFile();
 
 
-        executeJob(job.getExecuteName());
+        execute(job.getExecuteName());
     }
 }
