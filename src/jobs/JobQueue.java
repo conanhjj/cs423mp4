@@ -29,4 +29,10 @@ public class JobQueue {
             return jobList.remove(0);
         }
     }
+
+    public boolean isEmpty() {
+        synchronized (this) {
+            return jobList.isEmpty();
+        }
+    }
 }

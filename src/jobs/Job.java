@@ -1,11 +1,23 @@
 package jobs;
 
 
-public class Job {
+import java.io.Serializable;
 
-    JobResult result;
+public class Job implements Serializable {
 
-    public void Job() {
+    private JobResult result;
+    private String executeCommand;
+
+    public Job() {
+        this("null");
+    }
+
+    public Job(String cmd) {
         result = new JobResult();
+        executeCommand = cmd;
+    }
+
+    public String getCommand() {
+        return executeCommand;
     }
 }
