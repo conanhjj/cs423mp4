@@ -1,8 +1,12 @@
 package jobs;
 
-public class JobResult {
+import java.io.Serializable;
+
+public class JobResult implements Serializable {
 
     private String result;
+
+    private static final long serialVersionUID = 6234566222960044811L;
 
     public JobResult() {
 

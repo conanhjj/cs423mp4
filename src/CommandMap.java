@@ -6,7 +6,7 @@ public class CommandMap {
     private static final String CMD_HELP = "help";
     private static final String CMD_CONNECT = "connect";
     private static final String CMD_START = "start";
-    private static final String CMD_LOAD_JOB = "ldjob";
+    private static final String CMD_LOAD_JOB = "ld";
     private static final String CMD_LIST_JOBS= "lsjob";
 
     private static Map<String, String> funcMap = new HashMap<String, String>();

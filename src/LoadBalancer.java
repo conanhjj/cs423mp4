@@ -16,7 +16,8 @@ public class LoadBalancer {
     private static Adaptor adaptor;
     private static String[] parameters;
 
-    private static final String BAR = "--------------------------------------------";
+    private static final String BAR =
+            "----------------------------------------------------------------------------------------";
 
     public static void main(String[] args) {
         log4jConfigure();
@@ -47,13 +48,13 @@ public class LoadBalancer {
         printGoodbyeMessage();
     }
 
-    private static final String FORMAT_STRING_COMMAND = "%-25s%-25s\n";
+    private static final String FORMAT_STRING_COMMAND = "%-35s%-35s\n";
     public static void printHelp() {
         System.out.printf(FORMAT_STRING_COMMAND, "COMMAND", "USAGE");
         System.out.printf(FORMAT_STRING_COMMAND, "connect <IP>:<PORT>", "connect the remote node");
         System.out.printf(FORMAT_STRING_COMMAND, "start <PORT>", "start the node using given port");
         System.out.printf(FORMAT_STRING_COMMAND, "lsjob", "list the jobs in queue");
-        System.out.printf(FORMAT_STRING_COMMAND, "ldjob <EXECUTABLE_FILE_NAME>", "upload the job file");
+        System.out.printf(FORMAT_STRING_COMMAND, "ld <EXECUTABLE_FILE_NAME>", "upload the job file");
         System.out.printf(FORMAT_STRING_COMMAND, "quit", "quit the program");
     }
 
@@ -78,6 +79,9 @@ public class LoadBalancer {
 
         Integer port = Integer.valueOf(parameters[1]);
         adaptor = new Adaptor(port);
+
+        //TODO: FOR TEST
+        adaptor.getWorkerThread().suspend();
     }
 
     public static void loadJob() {
@@ -110,6 +114,7 @@ public class LoadBalancer {
         for(Job job : jobQueue) {
             System.out.printf(FORMAT_STRING_LIST_JOB, job.getFileName(), job.getSize(), job.isLoaded() ? "T" : "F");
         }
+        System.out.println(BAR);
     }
 
     private static void printWelcomeMessage() {
