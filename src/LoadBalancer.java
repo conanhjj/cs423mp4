@@ -13,7 +13,7 @@ public class LoadBalancer {
 
     private static Logger logger = Logger.getLogger(LoadBalancer.class);
     private static Scanner in = new Scanner(System.in);
-
+    private static Adaptor adaptor;
     private static String[] parameters;
 
     public static void main(String[] args) {
@@ -56,8 +56,12 @@ public class LoadBalancer {
             System.out.println("Wrong command format. Should use connect <IP>:<PORT>, eg connect 127.0.0.1:20000");
             return;
         }
-        String str = parameters[1];
+        String param = parameters[1];
         //TODO: WRITE YOUR CONNECT CODE HERE
+        int delim = param.indexOf(':');
+        String hostname = param.substring(0, delim);
+        int ip = Integer.parseInt(param.substring(delim) + 1);
+        adaptor.tryConnect(hostname, ip);
     }
 
     private static void printWelcomeMessage() {
@@ -82,7 +86,7 @@ public class LoadBalancer {
         logger.info("Load "+ CommandMap.size() + " command(s) successfully");
 
         //TODO: put all your init code here
-        new Adaptor();
+        adaptor = new Adaptor();
         logger.info("Program initializes successfully");
         System.out.println("--------------------------------------------");
     }

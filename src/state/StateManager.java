@@ -23,7 +23,7 @@ public class StateManager {
 	private State remoteState;
 	private LoopSender loopSender;
 	private Listener listener;
-	final private int PORT_NO = 4567;
+	final private int PORT_NO = 20000;
 	
 	public StateManager(int interval) {
 		this.interval = interval;
@@ -32,6 +32,26 @@ public class StateManager {
 	
 	public StateManager(){
 		this(10000);
+	}
+	
+	public void init(){
+		loopSender = new LoopSender(this);
+		listener = new Listener(this);
+	}
+	
+	public void tryConnect(String hostname, int port){
+		try {
+			socket = new Socket(hostname, port);
+			init();
+			System.out.println("init stateManager in tryConnect");
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public synchronized void setState(State state){
@@ -119,8 +139,8 @@ public class StateManager {
 			try {    
 				ServerSocket serverSocket = new ServerSocket(PORT_NO);
 				socket = serverSocket.accept();
-				loopSender = new LoopSender(stateManager);
-				listener = new Listener(stateManager);
+				init();
+				System.out.println("init stateManager in ServerListener");
 	        } catch (UnknownHostException e) {
 	            e.printStackTrace();
 	        } catch (IOException e) {

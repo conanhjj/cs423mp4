@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import state.StateManager;
+import state.StateManager.Listener;
 import state.StateManager.LoopSender;
 
 /*
@@ -20,10 +21,29 @@ import state.StateManager.LoopSender;
 public class TransferManager {
 	public Socket socket;
 	private Listener listener;
-	final private int PORT_NO = 5678;
+	final private int PORT_NO = 20001;
 	
 	public TransferManager(){
 		new ServerListener(this);
+	}
+	
+	public void init(){
+		listener = new Listener(this);
+	}
+	
+	public void tryConnect(String hostname, int port){
+		try {
+			socket = new Socket(hostname, port);
+			init();
+			System.out.println("init transferManager in tryConnect");
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void sendJob(Job job){
@@ -85,7 +105,8 @@ public class TransferManager {
 			try {    
 				ServerSocket serverSocket = new ServerSocket(PORT_NO);
 				socket = serverSocket.accept();
-				listener = new Listener(transferManager);
+				init();
+				System.out.println("init transferManager in ServerListener");
 	        } catch (UnknownHostException e) {
 	            e.printStackTrace();
 	        } catch (IOException e) {

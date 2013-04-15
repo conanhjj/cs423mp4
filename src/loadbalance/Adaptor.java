@@ -21,12 +21,17 @@ public class Adaptor {
 	final int POLL_LIM = 1;
 	
 	public Adaptor(){
+		workerThread = new WorkerThread();
+		workerThread.start();
 		stateManager = new StateManager();
 		transferManager = new TransferManager();
 		transferChecker = new TransferChecker();
 		// hardwareMonitor = new HardwareManager();
-		workerThread = new WorkerThread();
-		workerThread.start();
+	}
+	
+	public void tryConnect(String hostname, int port){
+		stateManager.tryConnect(hostname, port);
+		transferManager.tryConnect(hostname, port + 1);
 	}
 	
 	public class TransferChecker extends Thread {
@@ -43,6 +48,7 @@ public class Adaptor {
 		
 		public void checkForAvailableTransfer(){
 			TransferPolicy transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueueSize()));
+			
 			if(transferPolicy.isTransferable()){
 				
 				if(remoteState.job_queue_length < THRESHOLD){
