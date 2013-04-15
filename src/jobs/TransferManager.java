@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import loadbalance.Adaptor;
+
 /*
  * Transfer Manager: The Transfer Manager is responsible of performing a load transfer 
  * upon request of the adaptor. It must move jobs from the Job Queue and send them to remote node. 
@@ -17,10 +19,12 @@ import java.net.UnknownHostException;
 public class TransferManager {
 	public Socket socket;
 	private Listener listener;
+	private Adaptor adaptor;
 	private int PORT_NO = 20001;
 	
-	public TransferManager(int serverPort){
+	public TransferManager(int serverPort, Adaptor adaptor){
 		PORT_NO = serverPort;
+		this.adaptor = adaptor;
 		new ServerListener(this);
 	}
 	
@@ -57,7 +61,8 @@ public class TransferManager {
 	}
 	
 	public void receiveJob(Job job){
-		// put into job queue
+		// put into job queue via Adaptor
+		adaptor.addJob(job);
 	}
 	
 	/*

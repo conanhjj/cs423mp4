@@ -25,7 +25,7 @@ public class Adaptor {
 		workerThread = new WorkerThread();
 		workerThread.start();
 		stateManager = new StateManager(serverPort);
-		transferManager = new TransferManager(serverPort + 1);
+		transferManager = new TransferManager(serverPort + 1, this);
 		transferChecker = new TransferChecker();
 		hardwareMonitor = new HardwareMonitor();
 	}
@@ -42,7 +42,10 @@ public class Adaptor {
     public WorkerThread getWorkerThread() {
         return workerThread;
     }
-
+    
+    public void addJob(Job job){
+    	getJobQueue().append(job);
+    }
 
     public class TransferChecker extends Thread {
 		private int SLEEP_TIME;
