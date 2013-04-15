@@ -41,7 +41,7 @@ public class Adaptor {
 			start();
 		}
 		
-		public void checkForAvailbleTransfer(){
+		public void checkForAvailableTransfer(){
 			TransferPolicy transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueueSize()));
 			if(transferPolicy.isTransferable()){
 				
@@ -58,7 +58,7 @@ public class Adaptor {
 		@Override
 		public void run() {
 			while(true){
-				this.checkForAvailbleTransfer();
+				this.checkForAvailableTransfer();
 				try {
 					sleep(this.SLEEP_TIME);
 				} catch (InterruptedException e) {
