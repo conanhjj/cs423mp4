@@ -27,4 +27,9 @@ public class State implements Serializable{
 		this.throttling = state.throttling;
 		this.cpuUtilization = state.cpuUtilization;
 	}
+	
+	@Override
+	public String toString(){
+		return "state: " + job_queue_length + ' ' + throttling + ' ' + cpuUtilization;
+	}
 }

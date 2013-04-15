@@ -61,7 +61,7 @@ public class LoadBalancer {
         //TODO: WRITE YOUR CONNECT CODE HERE
         int delim = param.indexOf(':');
         String hostname = param.substring(0, delim);
-        int ip = Integer.parseInt(param.substring(delim) + 1);
+        int ip = Integer.parseInt(param.substring(delim + 1));
         adaptor.tryConnect(hostname, ip);
     }
 

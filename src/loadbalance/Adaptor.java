@@ -11,7 +11,7 @@ import state.StateManager;
 
 
 public class Adaptor {
-	State state, remoteState;
+	State localState, remoteState;
 	StateManager stateManager;
 	TransferManager transferManager;
 	TransferChecker transferChecker;
@@ -26,7 +26,7 @@ public class Adaptor {
 		stateManager = new StateManager(serverPort);
 		transferManager = new TransferManager(serverPort + 1);
 		transferChecker = new TransferChecker();
-		// hardwareMonitor = new HardwareManager();
+		hardwareMonitor = new HardwareMonitor();
 	}
 	
 	public void tryConnect(String hostname, int port){
@@ -47,8 +47,11 @@ public class Adaptor {
 		}
 		
 		public void checkForAvailableTransfer(){
-			TransferPolicy transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueueSize()));
+			localState = new state.State(workerThread.getJobQueueSize(), 0, 20);
+			stateManager.setState(localState);
+			remoteState = stateManager.getRemoteState();
 			
+			TransferPolicy transferPolicy = (new SenderInitTransferPolicy(localState.job_queue_length));
 			if(transferPolicy.isTransferable()){
 				
 				if(remoteState.job_queue_length < THRESHOLD){

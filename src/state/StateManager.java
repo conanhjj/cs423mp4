@@ -28,6 +28,7 @@ public class StateManager {
 	public StateManager(int interval, int serverPort) {
 		this.interval = interval;
 		PORT_NO = serverPort;
+		setState(new State(-1, -1, -1));
 		new ServerListener(this);
 	}
 	
@@ -56,16 +57,18 @@ public class StateManager {
 	}
 	
 	public synchronized void setState(State state){
-		state = new State(state);
+		this.state = new State(state);
 	}
 	
-	public synchronized void setRemoteState(State state){
+	private synchronized void setRemoteState(State state){
+		System.out.println("Obtain remote state: " + state);
 		this.remoteState = new State(state);
 	}
 	
 	private synchronized void sendState(){
 		try 
         {
+			System.out.println("send current state: " + state);
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
             objectOutput.writeObject(state);                
         } 
@@ -90,7 +93,6 @@ public class StateManager {
 
 		public void run() {
 			while(true)	{
-				
 				stateManager.sendState();
 				
 				try {

@@ -11,7 +11,7 @@ public class HardwareMonitor {
 	 * ref: http://stackoverflow.com/questions/5907519/measure-cpu-usage-of-the-jvm-java-code
 	 */
 	
-	private static double getCpuUtilzation(){
+	public static double getCpuUtilzation(){
 		
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
@@ -35,9 +35,5 @@ public class HardwareMonitor {
 
 	    cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * availableProcessors));
 	    return cpuUsage;
-	}
-	
-	public static void main(String [] args) {
-		System.out.println(getCpuUtilzation());
 	}
 }
