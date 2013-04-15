@@ -39,6 +39,10 @@ public class Adaptor {
         return workerThread.getJobQueue();
     }
 
+    public WorkerThread getWorkerThread() {
+        return workerThread;
+    }
+
 
     public class TransferChecker extends Thread {
 		private int SLEEP_TIME;

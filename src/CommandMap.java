@@ -6,7 +6,8 @@ public class CommandMap {
     private static final String CMD_HELP = "help";
     private static final String CMD_CONNECT = "connect";
     private static final String CMD_START = "start";
-    private static final String CMD_LIST_JOBS= "lsj";
+    private static final String CMD_LOAD_JOB = "ldjob";
+    private static final String CMD_LIST_JOBS= "lsjob";
 
     private static Map<String, String> funcMap = new HashMap<String, String>();
 
@@ -15,6 +16,7 @@ public class CommandMap {
         funcMap.put(CMD_CONNECT, "connectNode");
         funcMap.put(CMD_START, "startNode");
         funcMap.put(CMD_LIST_JOBS, "listJobs");
+        funcMap.put(CMD_LOAD_JOB, "loadJob");
     }
 
     public static String getFuncName(String str) {

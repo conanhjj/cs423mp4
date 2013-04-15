@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import util.Util;
 
+import java.io.File;
 import java.util.Scanner;
 
 import loadbalance.Adaptor;
@@ -50,6 +51,8 @@ public class LoadBalancer {
         System.out.printf(FORMAT_STRING_COMMAND, "COMMAND", "USAGE");
         System.out.printf(FORMAT_STRING_COMMAND, "connect <IP>:<PORT>", "connect the remote node");
         System.out.printf(FORMAT_STRING_COMMAND, "start <PORT>", "start the node using given port");
+        System.out.printf(FORMAT_STRING_COMMAND, "lsjob", "list the jobs in queue");
+        System.out.printf(FORMAT_STRING_COMMAND, "ldjob <EXECUTABLE_FILE_NAME>", "upload the job file");
         System.out.printf(FORMAT_STRING_COMMAND, "quit", "quit the program");
     }
 
@@ -74,6 +77,23 @@ public class LoadBalancer {
 
         Integer port = Integer.valueOf(parameters[1]);
         adaptor = new Adaptor(port);
+    }
+
+    public static void loadJob() {
+        if(parameters.length != 2) {
+            System.out.println("Wrong command format. See help");
+            return;
+        }
+
+        String fileName = parameters[1];
+        Job job = new Job(fileName);
+        if(!job.loadJobFromFile())
+            System.out.println("Encountering error in loading jobs");
+        if(!job.saveJobToFile())
+            System.out.println("Encountering error in saving jobs");
+
+        logger.info("Successfully load job " + fileName);
+        adaptor.getWorkerThread().addJob(job);
     }
 
     private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s%-25s\n";
