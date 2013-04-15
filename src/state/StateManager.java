@@ -23,15 +23,16 @@ public class StateManager {
 	private State remoteState;
 	private LoopSender loopSender;
 	private Listener listener;
-	final private int PORT_NO = 20000;
+	private int PORT_NO;
 	
-	public StateManager(int interval) {
+	public StateManager(int interval, int serverPort) {
 		this.interval = interval;
+		PORT_NO = serverPort;
 		new ServerListener(this);
 	}
 	
-	public StateManager(){
-		this(10000);
+	public StateManager(int serverPort){
+		this(10000, serverPort);
 	}
 	
 	public void init(){

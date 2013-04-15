@@ -7,10 +7,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import state.StateManager;
-import state.StateManager.Listener;
-import state.StateManager.LoopSender;
-
 /*
  * Transfer Manager: The Transfer Manager is responsible of performing a load transfer 
  * upon request of the adaptor. It must move jobs from the Job Queue and send them to remote node. 
@@ -21,9 +17,10 @@ import state.StateManager.LoopSender;
 public class TransferManager {
 	public Socket socket;
 	private Listener listener;
-	final private int PORT_NO = 20001;
+	private int PORT_NO = 20001;
 	
-	public TransferManager(){
+	public TransferManager(int serverPort){
+		PORT_NO = serverPort;
 		new ServerListener(this);
 	}
 	

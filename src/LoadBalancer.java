@@ -72,7 +72,7 @@ public class LoadBalancer {
         }
 
         Integer port = Integer.valueOf(parameters[1]);
-
+        adaptor = new Adaptor(port);
     }
 
     private static void printWelcomeMessage() {
@@ -97,7 +97,6 @@ public class LoadBalancer {
         logger.info("Load "+ CommandMap.size() + " command(s) successfully");
 
         //TODO: put all your init code here
-        adaptor = new Adaptor();
         logger.info("Program initializes successfully");
         System.out.println("--------------------------------------------");
     }

@@ -20,11 +20,11 @@ public class Adaptor {
 	final int THRESHOLD = 3;
 	final int POLL_LIM = 1;
 	
-	public Adaptor(){
+	public Adaptor(int serverPort){
 		workerThread = new WorkerThread();
 		workerThread.start();
-		stateManager = new StateManager();
-		transferManager = new TransferManager();
+		stateManager = new StateManager(serverPort);
+		transferManager = new TransferManager(serverPort + 1);
 		transferChecker = new TransferChecker();
 		// hardwareMonitor = new HardwareManager();
 	}
