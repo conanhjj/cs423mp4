@@ -48,6 +48,7 @@ public class LoadBalancer {
     public static void printHelp() {
         System.out.printf(FORMAT_STRING, "COMMAND", "USAGE");
         System.out.printf(FORMAT_STRING, "connect <IP>:<PORT>", "connect the remote node");
+        System.out.printf(FORMAT_STRING, "start <PORT>", "start the node using given port");
         System.out.printf(FORMAT_STRING, "quit", "quit the program");
     }
 
@@ -62,6 +63,16 @@ public class LoadBalancer {
         String hostname = param.substring(0, delim);
         int ip = Integer.parseInt(param.substring(delim) + 1);
         adaptor.tryConnect(hostname, ip);
+    }
+
+    public static void startNode() {
+        if(parameters.length != 2) {
+            System.out.println("Wrong command format. Should use start <PORT>, eg start 20000");
+            return;
+        }
+
+        Integer port = Integer.valueOf(parameters[1]);
+
     }
 
     private static void printWelcomeMessage() {
