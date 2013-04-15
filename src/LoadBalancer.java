@@ -1,10 +1,9 @@
+import jobs.Job;
+import jobs.JobQueue;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import util.Util;
 
-import javax.activation.*;
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.Scanner;
 
 import loadbalance.Adaptor;
@@ -15,6 +14,8 @@ public class LoadBalancer {
     private static Scanner in = new Scanner(System.in);
     private static Adaptor adaptor;
     private static String[] parameters;
+
+    private static final String BAR = "--------------------------------------------";
 
     public static void main(String[] args) {
         log4jConfigure();
@@ -44,12 +45,12 @@ public class LoadBalancer {
         printGoodbyeMessage();
     }
 
-    private static final String FORMAT_STRING = "%-25s%-25s\n";
+    private static final String FORMAT_STRING_COMMAND = "%-25s%-25s\n";
     public static void printHelp() {
-        System.out.printf(FORMAT_STRING, "COMMAND", "USAGE");
-        System.out.printf(FORMAT_STRING, "connect <IP>:<PORT>", "connect the remote node");
-        System.out.printf(FORMAT_STRING, "start <PORT>", "start the node using given port");
-        System.out.printf(FORMAT_STRING, "quit", "quit the program");
+        System.out.printf(FORMAT_STRING_COMMAND, "COMMAND", "USAGE");
+        System.out.printf(FORMAT_STRING_COMMAND, "connect <IP>:<PORT>", "connect the remote node");
+        System.out.printf(FORMAT_STRING_COMMAND, "start <PORT>", "start the node using given port");
+        System.out.printf(FORMAT_STRING_COMMAND, "quit", "quit the program");
     }
 
     public static void connectNode() {
@@ -75,6 +76,21 @@ public class LoadBalancer {
         adaptor = new Adaptor(port);
     }
 
+    private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s%-25s\n";
+    public static void listJobs() {
+        if(parameters.length != 1) {
+            System.out.println("Wrong command format. No argument for list jobs command");
+            return;
+        }
+
+        JobQueue jobQueue = adaptor.getJobQueue();
+        System.out.println(BAR);
+        System.out.printf(FORMAT_STRING_LIST_JOB,"Job Name", "Job Size", "IsLoadedToMemory");
+        for(Job job : jobQueue) {
+            System.out.printf(FORMAT_STRING_LIST_JOB, job.getFileName(), job.getSize(), job.isLoaded() ? "T" : "F");
+        }
+    }
+
     private static void printWelcomeMessage() {
         System.out.println("Welcome to use LoadBalancer!");
         System.out.println("Author: Raviphol Sukhajoti, Junjie Hu");
@@ -98,7 +114,7 @@ public class LoadBalancer {
 
         //TODO: put all your init code here
         logger.info("Program initializes successfully");
-        System.out.println("--------------------------------------------");
+        System.out.println(BAR);
     }
 
     private static void log4jConfigure() {

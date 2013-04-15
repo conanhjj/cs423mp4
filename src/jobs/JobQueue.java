@@ -1,10 +1,11 @@
 package jobs;
 
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class JobQueue {
+public class JobQueue implements Iterable<Job>{
 
     private List<Job> jobList;
 
@@ -52,5 +53,13 @@ public class JobQueue {
         JobQueue jobQueue = new JobQueue();
         Job job = jobQueue.pop();
         System.out.println(job);
+    }
+
+    @Override
+    public Iterator<Job> iterator() {
+        synchronized (this) {
+            List<Job> newList = new LinkedList<Job>(jobList);
+            return newList.iterator();
+        }
     }
 }

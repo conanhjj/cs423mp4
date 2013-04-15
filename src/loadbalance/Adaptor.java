@@ -1,5 +1,6 @@
 package loadbalance;
 
+import jobs.JobQueue;
 import policy.SenderInitTransferPolicy;
 import policy.TransferPolicy;
 import jobs.Job;
@@ -33,8 +34,13 @@ public class Adaptor {
 		stateManager.tryConnect(hostname, port);
 		transferManager.tryConnect(hostname, port + 1);
 	}
-	
-	public class TransferChecker extends Thread {
+
+    public JobQueue getJobQueue() {
+        return workerThread.getJobQueue();
+    }
+
+
+    public class TransferChecker extends Thread {
 		private int SLEEP_TIME;
 		
 		public TransferChecker(){
