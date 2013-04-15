@@ -14,6 +14,7 @@ public class Adaptor {
 	State state, remoteState;
 	StateManager stateManager;
 	TransferManager transferManager;
+	TransferChecker transferChecker;
 	HardwareMonitor hardwareMonitor;
 	WorkerThread workerThread;
 	final int THRESHOLD = 3;
@@ -22,6 +23,7 @@ public class Adaptor {
 	public Adaptor(){
 		stateManager = new StateManager();
 		transferManager = new TransferManager();
+		transferChecker = new TransferChecker();
 		// hardwareMonitor = new HardwareManager();
 		workerThread = new WorkerThread();
 		workerThread.start();
@@ -31,11 +33,12 @@ public class Adaptor {
 		private int SLEEP_TIME;
 		
 		public TransferChecker(){
-			SLEEP_TIME = 1000;
+			this(1000);
 		}
 		
 		public TransferChecker(int sleep_time){
 			this.SLEEP_TIME = sleep_time;
+			start();
 		}
 		
 		public void checkForAvailbleTransfer(){
