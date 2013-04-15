@@ -31,6 +31,7 @@ public class LoadBalancer {
         while(true) {
             printCommandNotifier();
             String cmd = in.nextLine();
+            if(cmd.length() == 0) continue;
             parameters = cmd.split(" ");
             if(parameters[0].toUpperCase().equals("QUIT")) {
                 break;

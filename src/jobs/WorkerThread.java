@@ -92,8 +92,14 @@ public class WorkerThread {
             Process p = pb.start();
             BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(p.getInputStream())));
 
-            String lineStr;
+            String lineStr, result;
+            result = null;
             while((lineStr = br.readLine()) != null) {
+                if(result == null) {
+                    result = lineStr;
+                } else {
+                    result += "\n" + lineStr;
+                }
                 System.out.println(lineStr);
             }
             if(p.waitFor() != 0) {
@@ -102,7 +108,7 @@ public class WorkerThread {
                 }
             }
 
-            return lineStr;
+            return result;
 
         } catch (IOException ex) {
             System.err.println(ex);
