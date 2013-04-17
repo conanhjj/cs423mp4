@@ -19,7 +19,9 @@ public class Adaptor {
 	TransferChecker transferChecker;
 	HardwareMonitor hardwareMonitor;
 	WorkerThread workerThread;
-	final int THRESHOLD = 3;
+	
+	TransferPolicy transferPolicy;
+	final int THRESHOLD = 2;
 	final int POLL_LIM = 1;
 	
 	public Adaptor(int serverPort){
@@ -27,8 +29,8 @@ public class Adaptor {
 		workerThread.start();
 		stateManager = new StateManager(serverPort);
 		transferManager = new TransferManager(serverPort + 1, this);
-		transferChecker = new TransferChecker();
 		hardwareMonitor = new HardwareMonitor();
+		transferChecker = new TransferChecker();
 	}
 	
 	public void tryConnect(String hostname, int port){
@@ -38,6 +40,14 @@ public class Adaptor {
 
     public JobQueue getJobQueue() {
         return workerThread.getJobQueue();
+    }
+    
+    public synchronized void processJobRequest(){
+    	if(transferPolicy == null) return;
+    	
+    	Job job = workerThread.getJobQueue().popIfLengthExceed(THRESHOLD, transferPolicy.selectionPolicy);
+    	if(job != null)
+    		transferManager.sendJob(job);
     }
 
     public WorkerThread getWorkerThread() {
@@ -52,7 +62,7 @@ public class Adaptor {
 		private int SLEEP_TIME;
 		
 		public TransferChecker(){
-			this(1000);
+			this(2000);
 		}
 		
 		public TransferChecker(int sleep_time){
@@ -61,12 +71,12 @@ public class Adaptor {
 		}
 		
 		public synchronized void checkForAvailableTransfer(){
-			localState = new state.State(workerThread.getJobQueueSize(), 0, 20);
+			localState = new state.State(workerThread.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
 			stateManager.setState(localState);
 			remoteState = stateManager.getRemoteState();
 			
-			//TransferPolicy transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
-			TransferPolicy transferPolicy = (new ReceiverInitTransferPolicy(workerThread.getJobQueue(), remoteState));
+			// transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
+			transferPolicy = (new ReceiverInitTransferPolicy(workerThread.getJobQueue(), remoteState));
 			
 			Job job = transferPolicy.getJobIfTransferable();
 			if(job != null)

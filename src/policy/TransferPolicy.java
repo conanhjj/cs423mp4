@@ -6,7 +6,7 @@ public abstract class TransferPolicy {
 	// Simple Selection Policy
 	protected final int NEWEST = -1;
 	protected final int OLDEST = -2;
-	protected int selectionPolicy;
+	public int selectionPolicy;
 	
 	public TransferPolicy(){
 		selectionPolicy = NEWEST;

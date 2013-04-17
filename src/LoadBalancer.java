@@ -81,7 +81,7 @@ public class LoadBalancer {
         adaptor = new Adaptor(port);
 
         //TODO: FOR TEST
-        adaptor.getWorkerThread().suspend();
+        //adaptor.getWorkerThread().suspend();
     }
 
     public static void loadJob() {

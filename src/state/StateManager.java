@@ -33,7 +33,7 @@ public class StateManager {
 	}
 	
 	public StateManager(int serverPort){
-		this(10000, serverPort);
+		this(5000, serverPort);
 	}
 	
 	public void init(){
@@ -61,14 +61,14 @@ public class StateManager {
 	}
 	
 	private synchronized void setRemoteState(State state){
-		System.out.println("Obtain remote state: " + state);
+		//System.out.println("Obtain remote state: " + state);
 		this.remoteState = new State(state);
 	}
 	
 	private synchronized void sendState(){
 		try 
         {
-			System.out.println("send current state: " + state);
+			//System.out.println("send current state: " + state);
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
             objectOutput.writeObject(state);                
         } 

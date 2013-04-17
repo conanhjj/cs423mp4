@@ -16,16 +16,20 @@ public class State implements Serializable{
 	public int throttling;
 	public double cpuUtilization;
 	
-	public State(int job_queue_length, int throttling, int cpuUtilization){
+	public State(int job_queue_length, int throttling, double d){
 		this.job_queue_length = job_queue_length;
 		this.throttling = throttling;
-		this.cpuUtilization = cpuUtilization;
+		this.cpuUtilization = d;
 	}
 	
 	public State(State state){
-		this.job_queue_length = state.job_queue_length;
-		this.throttling = state.throttling;
-		this.cpuUtilization = state.cpuUtilization;
+		if(state == null)
+			this.cpuUtilization = this.throttling = this.job_queue_length = -1;
+		else{
+			this.job_queue_length = state.job_queue_length;
+			this.throttling = state.throttling;
+			this.cpuUtilization = state.cpuUtilization;
+		}
 	}
 	
 	@Override

@@ -6,12 +6,36 @@ import java.lang.management.RuntimeMXBean;
 import com.sun.management.OperatingSystemMXBean;
 
 
-public class HardwareMonitor {
+public class HardwareMonitor extends Thread{
+	private double cpuUtilization;
+	
+	public HardwareMonitor(){
+		start();
+	}
+	
+	public synchronized double getCpuUtilization(){
+		return cpuUtilization;
+	}
+	
+	private synchronized void setCpuUtilization(double value){
+		cpuUtilization = value;
+	}
 	/*
 	 * ref: http://stackoverflow.com/questions/5907519/measure-cpu-usage-of-the-jvm-java-code
 	 */
 	
-	public static double getCpuUtilzation(){
+	@Override
+	public void run(){
+		setCpuUtilization(getCpuUtilization());
+		try {
+			sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static double getCpuUtilzation(){
 		
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
@@ -20,7 +44,6 @@ public class HardwareMonitor {
 	    long prevProcessCpuTime = operatingSystemMXBean.getProcessCpuTime();
 	    double cpuUsage;
 	    
-	    // Throtling ???
 	    try 
 	    {
 	        Thread.sleep(500);

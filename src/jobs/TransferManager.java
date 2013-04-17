@@ -48,7 +48,8 @@ public class TransferManager {
 	}
 	
 	public void sendJob(Job job){
-		// remove from job queue
+		if(job.isRequest)
+			System.out.println("Send job Request");
 		try 
         {
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
@@ -60,12 +61,20 @@ public class TransferManager {
         } 
 	}
 	
+	/*
 	public void requestJob(){
+		System.out.println("Send request.");
 		sendJob(new Job(true));
+	}
+	*/
+	
+	public void receiveRequest(){
+		adaptor.processJobRequest();
 	}
 	
 	public void receiveJob(Job job){
 		// put into job queue via Adaptor
+		System.out.println("Received Job");
 		adaptor.addJob(job);
 	}
 	
@@ -89,7 +98,10 @@ public class TransferManager {
 					ObjectInputStream objectInput = new ObjectInputStream(transferManager.socket.getInputStream());
 	                try {
 	                    Job job = (Job) objectInput.readObject();
-	                    transferManager.receiveJob(job);
+	                    if(job.isRequest)
+	                    	transferManager.receiveRequest();
+	                    else
+	                    	transferManager.receiveJob(job);
 	                } catch (ClassNotFoundException e) {
 	                    e.printStackTrace();
 	                }
