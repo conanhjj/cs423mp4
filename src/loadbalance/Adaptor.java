@@ -55,6 +55,8 @@ public class Adaptor {
     }
     
     public void addJob(Job job){
+        job.loadJobFromFile();
+        job.saveJobToFile();
     	getJobQueue().append(job);
     }
 
