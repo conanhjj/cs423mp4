@@ -57,7 +57,7 @@ public class TransferManager {
         } 
         catch (IOException e) 
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         } 
 	}
 	

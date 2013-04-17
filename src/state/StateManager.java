@@ -74,7 +74,7 @@ public class StateManager {
         } 
         catch (IOException e) 
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         } 
 	}
 	
