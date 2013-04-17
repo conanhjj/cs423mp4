@@ -1,6 +1,8 @@
 package jobs;
 
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.util.UUID;
 
@@ -27,6 +29,8 @@ public class Job implements Serializable {
     private static Integer MAX_JOB_SIZE = 65536;
 
     private UUID jobId;
+
+    private static Logger logger = Logger.getLogger(Job.class);
 
     public Job() {
         this("null");
@@ -79,7 +83,7 @@ public class Job implements Serializable {
             loadedToMemory  = true;
             return true;
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
+            logger.error("Couldn't find job file");
         } catch (IOException ex) {
             ex.printStackTrace();
         }

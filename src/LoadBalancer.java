@@ -35,6 +35,7 @@ public class LoadBalancer {
             if(cmd.length() == 0) continue;
             parameters = cmd.split(" ");
             if(parameters[0].toUpperCase().equals("QUIT")) {
+                stop();
                 break;
             }
 
@@ -46,6 +47,10 @@ public class LoadBalancer {
         }
 
         printGoodbyeMessage();
+    }
+
+    private static void stop() {
+        adaptor.getWorkerThread().stop();
     }
 
     private static final String FORMAT_STRING_COMMAND = "%-35s%-35s\n";
@@ -91,10 +96,14 @@ public class LoadBalancer {
 
         String fileName = parameters[1];
         Job job = new Job(fileName);
-        if(!job.loadJobFromFile())
+        if(!job.loadJobFromFile()) {
             System.out.println("Encountering error in loading jobs");
-        if(!job.saveJobToFile())
+            return;
+        }
+        if(!job.saveJobToFile()) {
             System.out.println("Encountering error in saving jobs");
+            return;
+        }
 
         logger.info("Successfully load job " + fileName);
         adaptor.getWorkerThread().addJob(job);
