@@ -165,6 +165,17 @@ public class WorkerThread {
         return jobQueue.size();
     }
 
+    public boolean setThrottling(Integer percentage) {
+        if(percentage <=0 || percentage >= 100) {
+            logger.error("Wrong Throttling Parameter");
+            return false;
+        }
+
+        RUNNING_TIME = (long) percentage * 10;
+        SLEEPING_TIME = 1000L - RUNNING_TIME;
+        return true;
+    }
+
     public static void main(String[] args) {
         Job job = new Job("test2");
         job.loadJobFromFile();
