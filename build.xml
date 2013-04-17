@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name = "LoadBalancer" default = "lb.jar" basedir = ".">
+    <property name="build.home" value="build/" />
+    <property name="deploy.home" value="deploy/" />
+    <property name="src" value="${basedir}/src/" />
+
+    <path id="compiled.classpath">
+        <fileset dir="lib">
+            <include name="*.jar" />    
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.home}" quiet="false"/>
+        <delete dir="${deploy.home}" quiet="false" />
+    </target>
+
+    <target name="lb.init" depends="clean">
+        <mkdir dir="${build.home}" />
+        <mkdir dir="${build.home}/classes/" />
+        <mkdir dir="${deploy.home}" />
+        <mkdir dir="${deploy.home}/lib" />
+    </target>
+
+    <target name="lb.compile" depends="lb.init">
+        <javac srcdir="${src}" destdir = "${build.home}/classes/" includeantruntime="false">
+            <classpath refid="compiled.classpath"/>
+        </javac>
+    </target>
+
+    <target name="lb.jar" depends="lb.compile">
+        <copy todir="${deploy.home}">
+            <fileset dir="${basedir}">
+                <include name="log4j.properties" />
+                <include name="*.sh" />
+                <include name="protobuf" />
+            </fileset>
+        </copy>
+
+        <copy todir="${deploy.home}/lib">
+            <fileset dir="${basedir}/lib">
+                <include name="*.jar" />     
+            </fileset>
+        </copy>
+
+        <jar destfile="${deploy.home}/lb.jar" basedir="${build.home}/classes">
+            <manifest>
+                <attribute name="Main-Class" value="LoadBalancer" />
+            </manifest>
+        </jar>
+    </target>
+    
+  
+    <target name="build" depends="lb.jar" />
+
+    
+</project>

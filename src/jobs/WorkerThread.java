@@ -1,6 +1,7 @@
 package jobs;
 
 
+import org.apache.log4j.Logger;
 import util.Util;
 
 import java.io.BufferedInputStream;
@@ -20,6 +21,10 @@ public class WorkerThread {
 
     private static Long NO_JOB_SLEEP_INTERVAL = 2000L;
     private static Long FINISH_SLEEP_INTERVAL = 1000L;
+    private static Long RUNNING_TIME = 700L;
+    private static Long SLEEPING_TIME = 1000L - RUNNING_TIME;
+
+    private static Logger logger = Logger.getLogger(WorkerThread.class);
 
     public WorkerThread() {
         jobQueue = new JobQueue();
@@ -39,9 +44,9 @@ public class WorkerThread {
 
                     if(!suspend) {
                         Job job = jobQueue.pop();
-                        executeJob(job);
+                        executeJob(job, thread);
                     }
-                    Util.sleep(FINISH_SLEEP_INTERVAL);
+                    //Util.sleep(FINISH_SLEEP_INTERVAL);
                 }
             }
         });
@@ -68,9 +73,9 @@ public class WorkerThread {
         }
     }
 
-    public void executeJob(Job job) {
+    public void executeJob(Job job, Thread curThread) {
         //TODO: fake code
-        String result = execute(job.getExecuteName());
+        String result = execute(job.getExecuteName(), curThread);
         if(result != null) {
             job.setJobResult(result);
         } else {
@@ -79,43 +84,65 @@ public class WorkerThread {
         Util.sleep(2000);
     }
 
-    private static String execute(String command) {
-        try {
-            List<String> cmds = new LinkedList<String>();
+    private static String execute(String command, final Thread curThread) {
+        List<String> cmds = new LinkedList<String>();
 //            cmds.add("sh");
 //            cmds.add("-c");
-            cmds.add("./" + command);
+        cmds.add("./" + command);
 
-            System.out.println(cmds.toString());
+        System.out.println(cmds.toString());
 
-            ProcessBuilder pb = new ProcessBuilder(cmds);
-            Process p = pb.start();
-            BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(p.getInputStream())));
+        ProcessBuilder pb = new ProcessBuilder(cmds);
+        Process p;
+        BufferedReader br;
+        try {
+            p = pb.start();
+            br = new BufferedReader(new InputStreamReader(new BufferedInputStream(p.getInputStream())));
+        } catch (IOException ex) {
+            logger.info("Create Running Process", ex);
+            return null;
+        }
 
-            String lineStr, result;
-            result = null;
+        String lineStr, result;
+        result = null;
+        while(true) {
+            try {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Util.sleep(RUNNING_TIME);
+                        curThread.interrupt();
+                    }
+                }).start();
+
+                Integer retVal = p.waitFor();
+                if(retVal != 0) {
+                    logger.error("Job Execute Error");
+                    return null;
+                } else {
+                    break;
+                }
+            }  catch (InterruptedException ex) {
+//                System.out.println("WorkerThread sleeping");
+                Util.sleep(SLEEPING_TIME);
+            }
+        }
+
+        try {
             while((lineStr = br.readLine()) != null) {
                 if(result == null) {
                     result = lineStr;
                 } else {
                     result += "\n" + lineStr;
                 }
-                System.out.println(lineStr);
             }
-            if(p.waitFor() != 0) {
-                if(p.exitValue() == 1) {
-                    System.err.println("Job Execute error");
-                }
-            }
-
-            return result;
-
-        } catch (IOException ex) {
-            System.err.println(ex);
-        } catch (InterruptedException ex) {
-            System.err.println(ex);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
+
+        System.out.println(result);
+        return result;
     }
 
     public void addJob(Job job) {
@@ -138,12 +165,23 @@ public class WorkerThread {
         return jobQueue.size();
     }
 
+    public boolean setThrottling(Integer percentage) {
+        if(percentage <=0 || percentage >= 100) {
+            logger.error("Wrong Throttling Parameter");
+            return false;
+        }
+
+        RUNNING_TIME = (long) percentage * 10;
+        SLEEPING_TIME = 1000L - RUNNING_TIME;
+        return true;
+    }
+
     public static void main(String[] args) {
-        Job job = new Job("test");
+        Job job = new Job("test2");
         job.loadJobFromFile();
         job.saveJobToFile();
 
 
-        execute(job.getExecuteName());
+        execute(job.getExecuteName(), Thread.currentThread());
     }
 }
