@@ -17,17 +17,16 @@ public class Job implements Serializable {
 	public byte version = 100;
 
     private JobResult jobResult;
-
+   
     private String fileName;
     private byte[] binaryCode;
     private Integer jobSize;
     private boolean loadedToMemory;
-
+    public boolean isRequest;
+    
     private static Integer MAX_JOB_SIZE = 65536;
 
     private UUID jobId;
-
-
 
     public Job() {
         this("null");
@@ -39,6 +38,12 @@ public class Job implements Serializable {
         jobResult = new JobResult();
         binaryCode = new byte[MAX_JOB_SIZE];
         loadedToMemory = false;
+        isRequest = false;
+    }
+    
+    public Job(boolean isRequest){
+    	this("null");
+    	this.isRequest = isRequest;
     }
 
     /**

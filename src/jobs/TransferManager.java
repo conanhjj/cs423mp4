@@ -60,6 +60,10 @@ public class TransferManager {
         } 
 	}
 	
+	public void requestJob(){
+		sendJob(new Job(true));
+	}
+	
 	public void receiveJob(Job job){
 		// put into job queue via Adaptor
 		adaptor.addJob(job);

@@ -78,8 +78,8 @@ public class StateManager {
         } 
 	}
 	
-	public State getRemoteState(){
-		return this.remoteState;
+	public synchronized State getRemoteState(){
+		return new State(this.remoteState);
 	}
 	
 	public class LoopSender extends Thread {

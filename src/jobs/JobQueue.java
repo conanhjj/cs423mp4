@@ -6,7 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class JobQueue implements Iterable<Job>{
-
+	private final int NEWEST = -1;
+	private final int OLDEST = -2;
     private List<Job> jobList;
 
     public JobQueue() {
@@ -35,6 +36,16 @@ public class JobQueue implements Iterable<Job>{
             else
                 return jobList.remove(0);
         }
+    }
+    
+    public Job popIfLengthExceed(int THRESHOLD, int index){
+    	synchronized (this) {
+    		if(jobList.size() > THRESHOLD){
+    			index = (index == OLDEST) ? 0 : (index == NEWEST) ? (jobList.size() -1) : index;
+    			return jobList.remove(index);
+    		}
+    	}
+    	return null;
     }
 
     public boolean isEmpty() {

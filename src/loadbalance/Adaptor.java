@@ -1,6 +1,7 @@
 package loadbalance;
 
 import jobs.JobQueue;
+import policy.ReceiverInitTransferPolicy;
 import policy.SenderInitTransferPolicy;
 import policy.TransferPolicy;
 import jobs.Job;
@@ -59,22 +60,17 @@ public class Adaptor {
 			start();
 		}
 		
-		public void checkForAvailableTransfer(){
+		public synchronized void checkForAvailableTransfer(){
 			localState = new state.State(workerThread.getJobQueueSize(), 0, 20);
 			stateManager.setState(localState);
 			remoteState = stateManager.getRemoteState();
 			
-			TransferPolicy transferPolicy = (new SenderInitTransferPolicy(localState.job_queue_length));
-			if(transferPolicy.isTransferable()){
-				
-				if(remoteState.job_queue_length < THRESHOLD){
-					Job job = workerThread.getJobQueue().pop();
-					if(job != null)
-						transferManager.sendJob(job);
-				}
-				//if(node != null)
-				//transferManager.sendJob(job);
-			}
+			//TransferPolicy transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
+			TransferPolicy transferPolicy = (new ReceiverInitTransferPolicy(workerThread.getJobQueue(), remoteState));
+			
+			Job job = transferPolicy.getJobIfTransferable();
+			if(job != null)
+				transferManager.sendJob(job);
 		}
 		
 		@Override
