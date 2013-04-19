@@ -1,6 +1,12 @@
 package jobs;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -13,6 +19,14 @@ public class MatrixAdditionJob extends Job {
 
     private int[][] matrix;
 
+    /**
+     *
+     * @param fileName
+     * @param row
+     * @param column
+     * @param count
+     * @param matrix
+     */
     public MatrixAdditionJob(String fileName, Integer row, Integer column, int count, int[][] matrix) {
         super(fileName);
         this.row = row;
@@ -66,5 +80,36 @@ public class MatrixAdditionJob extends Job {
     @Override
     public JobResult getResult() {
         return new MatrixAdditionResult(result);
+    }
+
+    public static List<MatrixAdditionJob> splitJobs(String fileName) throws FileNotFoundException {
+        Scanner in = new Scanner(new FileInputStream(fileName));
+        Integer row,column,count;
+        row = in.nextInt();
+        column = in.nextInt();
+        count = in.nextInt();
+        int[][] matrix = new int[row][column];
+        readMatrix(in, row, column,  matrix);
+        List<MatrixAdditionJob> list = new LinkedList<MatrixAdditionJob>();
+
+        for(int i=0;i<row;++i) {
+            int[][] smallMatrix = new int[1][column];
+            smallMatrix[0] = Arrays.copyOf(matrix[i], column);
+//            System.out.println("job " + i + ", " + Arrays.deepToString(smallMatrix));
+            MatrixAdditionJob maj = new MatrixAdditionJob(fileName, row, column, count, smallMatrix);
+            list.add(maj);
+        }
+        in.close();
+        return list;
+    }
+
+    private static void readMatrix(Scanner in, int row, int column, int[][] matrix) {
+        for(int i=0;i<row;++i)
+            for(int j=0;j<column;++j)
+                matrix[i][j] = in.nextInt();
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+        MatrixAdditionJob.splitJobs("matrix");
     }
 }
