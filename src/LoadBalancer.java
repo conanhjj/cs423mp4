@@ -79,7 +79,6 @@ public class LoadBalancer {
 
         Integer port = Integer.valueOf(parameters[1]);
         adaptor = new Adaptor(port);
-
         //TODO: FOR TEST
         //adaptor.getWorkerThread().suspend();
     }
