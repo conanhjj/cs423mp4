@@ -1,6 +1,7 @@
 package loadbalance;
 
 import java.awt.Container;
+import java.util.HashSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -12,6 +13,7 @@ import policy.ReceiverInitTransferPolicy;
 import policy.SenderInitTransferPolicy;
 import policy.TransferPolicy;
 import jobs.Job;
+import jobs.JobResult;
 import jobs.TransferManager;
 import jobs.WorkerThread;
 import state.HardwareMonitor;
@@ -30,6 +32,10 @@ public class Adaptor extends JFrame{
 	private DefaultListModel localListModel;
 	private DefaultListModel remoteListModel;
 	
+	JobResult result;
+	HashSet<String> localJobIDs;
+	int n_unfinished_part;
+
 	
 	State localState, remoteState;
 	StateManager stateManager;
@@ -102,10 +108,15 @@ public class Adaptor extends JFrame{
         return workerThread;
     }
     
+    public void loadJobs(Job [] jobs){
+    	this.n_unfinished_part = jobs.length;
+		for(Job job : jobs){
+			addJob(job);
+		}
+    }
+    
     public void addJob(Job job){
     	localListModel.addElement(job.toString());
-        job.loadJobFromFile();
-        job.saveJobToFile();
     	getJobQueue().append(job);
     }
 
@@ -131,7 +142,7 @@ public class Adaptor extends JFrame{
 			
 			Job job = transferPolicy.getJobIfTransferable();
 			if(job != null){
-				transferManager.sendJob(job);
+				sendJob(job);
 				remoteListModel.addElement(job.toString());
 			}
 		}
@@ -150,7 +161,28 @@ public class Adaptor extends JFrame{
 		}
 	}
 
-    public void jobFinished(Job job) {
-        //TODO: code here!!
+    private void finishedAll(){
+    	System.out.println(result.getResult());
+    }
+    
+    private void sendJob(Job job){
+    	transferManager.sendJob(job);
+    }
+    
+    public synchronized void jobFinished(Job job) {
+    	//local job
+    	if(localJobIDs.contains(job)){
+	    	if(result == null)
+	    		result = job.getResult();
+	    	else
+	    		result = result.aggregate(job.getResult());
+    		if(--this.n_unfinished_part == 0){
+    			finishedAll();
+    		}
+    	}
+    	// remote job
+    	else{
+    		this.sendJob(job);
+    	}
     }
 }

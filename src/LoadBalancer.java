@@ -1,5 +1,7 @@
 import jobs.Job;
 import jobs.JobQueue;
+import jobs.MatrixAdditionJob;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import util.Util;
@@ -88,13 +90,18 @@ public class LoadBalancer {
         //adaptor.getWorkerThread().suspend();
     }
 
+    public static void loadJob(String filename){
+    	MatrixAdditionJob.splitJob(filename);
+    }
+    
     public static void loadJob() {
         if(parameters.length != 2) {
             System.out.println("Wrong command format. See help");
             return;
         }
 
-//        String fileName = parameters[1];
+        String fileName = parameters[1];
+        loadJob(fileName);
 //        Job job = new Job(fileName);
 //        if(!job.loadJobFromFile()) {
 //            System.out.println("Encountering error in loading jobs");
