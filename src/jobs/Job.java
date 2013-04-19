@@ -5,44 +5,45 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Job: This is class for Job. It contains Job's binary code, and can be serialized.
  */
-public class Job implements Serializable {
+public abstract class Job implements Serializable {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 6212756222960044811L;
 
-	public byte version = 100;
+//    private JobResult jobResult;
 
-    private JobResult jobResult;
-   
-    private String fileName;
-    private byte[] binaryCode;
-    private Integer jobSize;
-    private boolean loadedToMemory;
+    protected String fileName;
+    protected byte[] binaryCode;
+    protected Integer jobSize;
+    protected boolean loadedToMemory;
     public boolean isRequest;
-    
+    private AtomicBoolean hasNotified;
+
     private static Integer MAX_JOB_SIZE = 65536;
 
     private UUID jobId;
 
     private static Logger logger = Logger.getLogger(Job.class);
 
-    public Job() {
+    private Job() {
         this("null");
     }
 
     public Job(String fileName) {
         this.fileName = fileName;
         jobId = UUID.randomUUID();
-        jobResult = new JobResult();
+//        jobResult = new JobResult();
         binaryCode = new byte[MAX_JOB_SIZE];
         loadedToMemory = false;
         isRequest = false;
+        hasNotified = new AtomicBoolean(false);
     }
     
     public Job(boolean isRequest){
@@ -123,10 +124,6 @@ public class Job implements Serializable {
         return false;
     }
 
-    public void setJobResult(String result) {
-        jobResult.setResult(result);
-    }
-
     public String getID () {
         return jobId.toString();
     }
@@ -135,13 +132,23 @@ public class Job implements Serializable {
         return jobSize;
     }
 
-    /**
-     * For testing
-     * @param args
-     */
-    public static void main(String[] args) throws Exception{
-        Job job = new Job("test");
-        job.loadJobFromFile();
-        job.saveJobToFile();
+    public boolean hasNotified() {
+        return hasNotified.get();
     }
+
+    public void setAsNotified() {
+        hasNotified.set(true);
+    }
+
+    public abstract String toString();
+
+    public abstract void run();
+
+    public abstract boolean isFinished();
+
+    public abstract void stop();
+
+    public abstract void resume();
+
+    public abstract JobResult getResult();
 }

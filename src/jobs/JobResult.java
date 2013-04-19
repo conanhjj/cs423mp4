@@ -2,18 +2,9 @@ package jobs;
 
 import java.io.Serializable;
 
-public class JobResult implements Serializable {
+public interface JobResult {
 
-    private String result;
+    public String getResult();
 
-    private static final long serialVersionUID = 6234566222960044811L;
-
-    public JobResult() {
-
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
+    public JobResult aggregate(JobResult result);
 }

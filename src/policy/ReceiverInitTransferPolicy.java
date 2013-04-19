@@ -2,6 +2,7 @@ package policy;
 
 import jobs.Job;
 import jobs.JobQueue;
+import jobs.MatrixAdditionJob;
 import state.State;
 
 public class ReceiverInitTransferPolicy extends TransferPolicy{
@@ -30,7 +31,7 @@ public class ReceiverInitTransferPolicy extends TransferPolicy{
 	@Override
 	public Job getJobIfTransferable() {
 		if(job_queue.size() < THRESHOLD && remoteState.job_queue_length > THRESHOLD)
-			return new Job(true);
+			return new MatrixAdditionJob(true);
 		return null;
 	}
 }

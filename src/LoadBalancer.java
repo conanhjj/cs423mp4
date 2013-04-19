@@ -94,19 +94,19 @@ public class LoadBalancer {
             return;
         }
 
-        String fileName = parameters[1];
-        Job job = new Job(fileName);
-        if(!job.loadJobFromFile()) {
-            System.out.println("Encountering error in loading jobs");
-            return;
-        }
-        if(!job.saveJobToFile()) {
-            System.out.println("Encountering error in saving jobs");
-            return;
-        }
-
-        logger.info("Successfully load job " + fileName);
-        adaptor.getWorkerThread().addJob(job);
+//        String fileName = parameters[1];
+//        Job job = new Job(fileName);
+//        if(!job.loadJobFromFile()) {
+//            System.out.println("Encountering error in loading jobs");
+//            return;
+//        }
+//        if(!job.saveJobToFile()) {
+//            System.out.println("Encountering error in saving jobs");
+//            return;
+//        }
+//
+//        logger.info("Successfully load job " + fileName);
+//        adaptor.getWorkerThread().addJob(job);
     }
 
     private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s%-25s\n";

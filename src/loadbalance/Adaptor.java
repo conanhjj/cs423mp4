@@ -44,7 +44,7 @@ public class Adaptor extends JFrame{
 	
 	public Adaptor(int serverPort){
 		super("Load Balancer");
-		workerThread = new WorkerThread();
+		workerThread = new WorkerThread(this);
 		workerThread.start();
 		stateManager = new StateManager(serverPort);
 		transferManager = new TransferManager(serverPort + 1, this);
@@ -149,4 +149,8 @@ public class Adaptor extends JFrame{
 			}
 		}
 	}
+
+    public void jobFinished(Job job) {
+        //TODO: code here!!
+    }
 }
