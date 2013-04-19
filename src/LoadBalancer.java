@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import util.Util;
 
-import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -134,7 +134,7 @@ public class LoadBalancer {
         System.out.println(BAR);
         System.out.printf(FORMAT_STRING_LIST_JOB,"Job Name", "Job Size", "IsLoadedToMemory");
         for(Job job : jobQueue) {
-            System.out.printf(FORMAT_STRING_LIST_JOB, job.getFileName(), job.getSize(), job.isLoaded() ? "T" : "F");
+            System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName(), job.getSize(), job.isLoaded() ? "T" : "F");
         }
         System.out.println(BAR);
     }

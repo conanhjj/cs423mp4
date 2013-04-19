@@ -19,7 +19,7 @@ public abstract class Job implements Serializable {
 
 //    private JobResult jobResult;
 
-    protected String fileName;
+    protected String jobName;
     protected byte[] binaryCode;
     protected Integer jobSize;
     protected boolean loadedToMemory;
@@ -36,8 +36,8 @@ public abstract class Job implements Serializable {
         this("null");
     }
 
-    public Job(String fileName) {
-        this.fileName = fileName;
+    public Job(String jobName) {
+        this.jobName = jobName;
         jobId = UUID.randomUUID();
 //        jobResult = new JobResult();
         binaryCode = new byte[MAX_JOB_SIZE];
@@ -55,8 +55,8 @@ public abstract class Job implements Serializable {
      * This function returns the original file name for job
      * @return The original file name for job
      */
-    public String getFileName() {
-        return fileName;
+    public String getJobName() {
+        return jobName;
     }
 
     /**
@@ -65,14 +65,14 @@ public abstract class Job implements Serializable {
      * @return The new file name for job
      */
     public String getExecuteName() {
-        return fileName + "_" + jobId.toString();
+        return jobName + "_" + jobId.toString();
     }
 
     public boolean loadJobFromFile() {
         DataInputStream dis;
 
         try {
-            dis = new DataInputStream(new FileInputStream(fileName));
+            dis = new DataInputStream(new FileInputStream(jobName));
 
             jobSize = dis.read(binaryCode);
             if(jobSize.equals(MAX_JOB_SIZE)) {

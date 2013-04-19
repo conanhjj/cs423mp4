@@ -74,7 +74,7 @@ public class MatrixAdditionJob extends Job {
 
     @Override
     public String toString() {
-        return fileName;
+        return jobName;
     }
 
     @Override
