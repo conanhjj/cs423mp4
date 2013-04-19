@@ -5,6 +5,7 @@ import loadbalance.Adaptor;
 import org.apache.log4j.Logger;
 import util.Util;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WorkerThread {
@@ -39,22 +40,22 @@ public class WorkerThread {
             @Override
             public void run() {
                 while(!stopWork) {
-                    if(jobQueue.isEmpty()) {
+                    if(jobQueue.isEmpty() && getCurRunJob() == null) {
                         Util.sleep(NO_JOB_SLEEP_INTERVAL);
                         continue;
                     }
 
                     if(!isSuspended.get()) {
-                        if(curRunJob == null)
-                            curRunJob = jobQueue.pop();
-                        if(!curRunJob.isFinished())
-                            curRunJob.run();
+                        if(getCurRunJob() == null)
+                            setCurRubJob(jobQueue.pop());
+                        if(!getCurRunJob().isFinished())
+                            getCurRunJob().run();
 
-                        if(curRunJob.isFinished() && !curRunJob.hasNotified()) {
-                            System.out.println(curRunJob.getResult());
-                            curRunJob.setAsNotified();
+                        if(getCurRunJob().isFinished()) {
+                            System.out.println(getCurRunJob().getResult());
                             if(adaptor != null)
                                 adaptor.jobFinished(curRunJob);
+                            setCurRubJob(null);
                         }
                     }
                 }
@@ -65,12 +66,16 @@ public class WorkerThread {
         monitorThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(!stopWork) {
-                    if(curRunJob == null) continue;     //TODO: not efficient
-                    curRunJob.resume();
-                    Util.sleep(RUNNING_TIME);
-                    curRunJob.stop();
-                    Util.sleep(SLEEPING_TIME);
+                while(!stopWork || getCurRunJob()!= null) {
+                    if(getCurRunJob() == null) continue;
+                    try {
+                        getCurRunJob().resume();
+                        Util.sleep(RUNNING_TIME);
+                        getCurRunJob().stop();
+                        Util.sleep(SLEEPING_TIME);
+                    } catch (NullPointerException ex) {
+                        //do nothing, it's okay when there is a NPE, since the job can be finished during waiting
+                    }
                 }
             }
         });
@@ -126,11 +131,22 @@ public class WorkerThread {
 
     public static void main(String[] args) {
         int[][] matrix = new int[][]{{1,1,1},{1,1,1},{1,1,1}};
-        MatrixAdditionJob maj = new MatrixAdditionJob("matrix", 3, 3, 100, matrix);
+        MatrixAdditionJob maj = new MatrixAdditionJob("matrix", 3, 3, 100000000, matrix);
         WorkerThread wt = new WorkerThread(null);
         wt.addJob(maj);
         wt.start();
-        wt.stop();
+    }
+
+    private void setCurRubJob(Job job) {
+        synchronized (this) {
+            curRunJob = job;
+        }
+    }
+
+    private Job getCurRunJob() {
+        synchronized (this) {
+            return curRunJob;
+        }
     }
 
 
