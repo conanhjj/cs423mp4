@@ -7,6 +7,7 @@ import org.apache.log4j.PropertyConfigurator;
 import util.Util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import loadbalance.Adaptor;
@@ -91,7 +92,13 @@ public class LoadBalancer {
     }
 
     public static void loadJob(String filename){
-    	MatrixAdditionJob.splitJob(filename);
+    	try {
+			adaptor.loadJobs(MatrixAdditionJob.splitJobs(filename));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			System.out.println("file not found");
+		}
     }
     
     public static void loadJob() {

@@ -2,6 +2,7 @@ package loadbalance;
 
 import java.awt.Container;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -56,6 +57,7 @@ public class Adaptor extends JFrame{
 		transferManager = new TransferManager(serverPort + 1, this);
 		hardwareMonitor = new HardwareMonitor();
 		transferChecker = new TransferChecker();
+		localJobIDs = new HashSet<String>();
 		initGUI(serverPort);
 	}
 	
@@ -108,9 +110,12 @@ public class Adaptor extends JFrame{
         return workerThread;
     }
     
-    public void loadJobs(Job [] jobs){
-    	this.n_unfinished_part = jobs.length;
+    public void loadJobs(List<Job> jobs){
+    	this.n_unfinished_part = jobs.size();
+    	System.out.println("size " + this.n_unfinished_part);
+    	this.localJobIDs = new HashSet<String>();
 		for(Job job : jobs){
+			localJobIDs.add(job.getID());
 			addJob(job);
 		}
     }
@@ -162,7 +167,7 @@ public class Adaptor extends JFrame{
 	}
 
     private void finishedAll(){
-    	System.out.println(result.getResult());
+    	System.out.println("result = " + result.getResult());
     }
     
     private void sendJob(Job job){
@@ -171,7 +176,8 @@ public class Adaptor extends JFrame{
     
     public synchronized void jobFinished(Job job) {
     	//local job
-    	if(localJobIDs.contains(job)){
+    	if(localJobIDs.contains(job.getID())){
+    		System.out.println("local finished. ID: " + job.getID() +  ", n = " + this.n_unfinished_part);
 	    	if(result == null)
 	    		result = job.getResult();
 	    	else
@@ -182,6 +188,7 @@ public class Adaptor extends JFrame{
     	}
     	// remote job
     	else{
+    		System.out.println("remote finished");
     		this.sendJob(job);
     	}
     }

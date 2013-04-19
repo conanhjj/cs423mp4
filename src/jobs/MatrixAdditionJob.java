@@ -82,7 +82,7 @@ public class MatrixAdditionJob extends Job {
         return new MatrixAdditionResult(result);
     }
 
-    public static List<MatrixAdditionJob> splitJobs(String fileName) throws FileNotFoundException {
+    public static List<Job> splitJobs(String fileName) throws FileNotFoundException {
         Scanner in = new Scanner(new FileInputStream(fileName));
         Integer row,column,count;
         row = in.nextInt();
@@ -90,13 +90,13 @@ public class MatrixAdditionJob extends Job {
         count = in.nextInt();
         int[][] matrix = new int[row][column];
         readMatrix(in, row, column,  matrix);
-        List<MatrixAdditionJob> list = new LinkedList<MatrixAdditionJob>();
+        List<Job> list = new LinkedList<Job>();
 
         for(int i=0;i<row;++i) {
             int[][] smallMatrix = new int[1][column];
             smallMatrix[0] = Arrays.copyOf(matrix[i], column);
 //            System.out.println("job " + i + ", " + Arrays.deepToString(smallMatrix));
-            MatrixAdditionJob maj = new MatrixAdditionJob(fileName, row, column, count, smallMatrix);
+            MatrixAdditionJob maj = new MatrixAdditionJob(fileName, 1, column, count, smallMatrix);
             list.add(maj);
         }
         in.close();
@@ -108,8 +108,9 @@ public class MatrixAdditionJob extends Job {
             for(int j=0;j<column;++j)
                 matrix[i][j] = in.nextInt();
     }
-
+/*
     public static void main(String[] args) throws FileNotFoundException {
         MatrixAdditionJob.splitJobs("matrix");
     }
+*/
 }
