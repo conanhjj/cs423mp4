@@ -129,14 +129,6 @@ public class WorkerThread {
         return true;
     }
 
-    public static void main(String[] args) {
-        int[][] matrix = new int[][]{{1,1,1},{1,1,1},{1,1,1}};
-        MatrixAdditionJob maj = new MatrixAdditionJob("matrix", 3, 3, 100000000, matrix);
-        WorkerThread wt = new WorkerThread(null);
-        wt.addJob(maj);
-        wt.start();
-    }
-
     private void setCurRubJob(Job job) {
         synchronized (this) {
             curRunJob = job;

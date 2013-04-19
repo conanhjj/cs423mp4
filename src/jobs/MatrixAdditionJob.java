@@ -14,7 +14,7 @@ public class MatrixAdditionJob extends Job {
     private Integer row;
     private Integer column;
     private AtomicInteger count;
-    private Integer result;
+    private Float result;
     private AtomicBoolean interrupt;
 
     private float[][] matrix;
@@ -35,7 +35,7 @@ public class MatrixAdditionJob extends Job {
         for(int i=0;i<row;++i) {
             System.arraycopy(matrix[i], 0, this.matrix[i], 0, column);
         }
-        result = 0;
+        result = 0f;
         this.count = new AtomicInteger(count);
         interrupt = new AtomicBoolean(false);
     }

@@ -2,13 +2,13 @@ package jobs;
 
 public class MatrixAdditionResult implements JobResult{
 
-    private Integer result;
+    private Float result;
 
     public MatrixAdditionResult() {
-        result = 0;
+        result = 0.0f;
     }
 
-    public MatrixAdditionResult(Integer r) {
+    public MatrixAdditionResult(Float r) {
         result = r;
     }
 
@@ -24,7 +24,7 @@ public class MatrixAdditionResult implements JobResult{
 
     @Override
     public JobResult aggregate(JobResult result) {
-        Integer r = Integer.valueOf(result.getResult());
+        Float r = Float.valueOf(result.getResult());
         return new MatrixAdditionResult(r + this.result);
     }
 }
