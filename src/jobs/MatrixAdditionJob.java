@@ -17,7 +17,7 @@ public class MatrixAdditionJob extends Job {
     private Integer result;
     private AtomicBoolean interrupt;
 
-    private int[][] matrix;
+    private float[][] matrix;
 
     /**
      *
@@ -27,11 +27,11 @@ public class MatrixAdditionJob extends Job {
      * @param count
      * @param matrix
      */
-    public MatrixAdditionJob(String fileName, Integer row, Integer column, int count, int[][] matrix) {
+    public MatrixAdditionJob(String fileName, Integer row, Integer column, int count, float[][] matrix) {
         super(fileName);
         this.row = row;
         this.column = column;
-        this.matrix = new int[row][column];
+        this.matrix = new float[row][column];
         for(int i=0;i<row;++i) {
             System.arraycopy(matrix[i], 0, this.matrix[i], 0, column);
         }
@@ -88,12 +88,12 @@ public class MatrixAdditionJob extends Job {
         row = in.nextInt();
         column = in.nextInt();
         count = in.nextInt();
-        int[][] matrix = new int[row][column];
+        float[][] matrix = new float[row][column];
         readMatrix(in, row, column,  matrix);
         List<Job> list = new LinkedList<Job>();
 
         for(int i=0;i<row;++i) {
-            int[][] smallMatrix = new int[1][column];
+            float[][] smallMatrix = new float[1][column];
             smallMatrix[0] = Arrays.copyOf(matrix[i], column);
 //            System.out.println("job " + i + ", " + Arrays.deepToString(smallMatrix));
             MatrixAdditionJob maj = new MatrixAdditionJob(fileName, 1, column, count, smallMatrix);
@@ -103,10 +103,10 @@ public class MatrixAdditionJob extends Job {
         return list;
     }
 
-    private static void readMatrix(Scanner in, int row, int column, int[][] matrix) {
+    private static void readMatrix(Scanner in, int row, int column, float[][] matrix) {
         for(int i=0;i<row;++i)
             for(int j=0;j<column;++j)
-                matrix[i][j] = in.nextInt();
+                matrix[i][j] = in.nextFloat();
     }
 /*
     public static void main(String[] args) throws FileNotFoundException {

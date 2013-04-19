@@ -111,6 +111,7 @@ public class Adaptor extends JFrame{
     }
     
     public void loadJobs(List<Job> jobs){
+        result = null;
     	this.n_unfinished_part = jobs.size();
     	System.out.println("size " + this.n_unfinished_part);
     	this.localJobIDs = new HashSet<String>();

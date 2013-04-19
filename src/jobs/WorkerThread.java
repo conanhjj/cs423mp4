@@ -54,7 +54,7 @@ public class WorkerThread {
                         if(getCurRunJob().isFinished()) {
                             System.out.println(getCurRunJob().getResult());
                             if(adaptor != null)
-                                adaptor.jobFinished(curRunJob);
+                                adaptor.jobFinished(getCurRunJob());
                             setCurRubJob(null);
                         }
                     }
