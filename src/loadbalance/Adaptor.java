@@ -104,6 +104,8 @@ public class Adaptor extends JFrame{
     
     public void addJob(Job job){
     	localListModel.addElement(job.toString());
+        job.loadJobFromFile();
+        job.saveJobToFile();
     	getJobQueue().append(job);
     }
 
