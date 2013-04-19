@@ -59,7 +59,7 @@ public class LoadBalancer {
         System.out.printf(FORMAT_STRING_COMMAND, "connect <IP>:<PORT>", "connect the remote node");
         System.out.printf(FORMAT_STRING_COMMAND, "start <PORT>", "start the node using given port");
         System.out.printf(FORMAT_STRING_COMMAND, "lsjob", "list the jobs in queue");
-        System.out.printf(FORMAT_STRING_COMMAND, "ld <EXECUTABLE_FILE_NAME>", "upload the job file");
+        System.out.printf(FORMAT_STRING_COMMAND, "ld <MATRIX_FILE_NAME>", "upload the job file");
         System.out.printf(FORMAT_STRING_COMMAND, "quit", "quit the program");
     }
 
