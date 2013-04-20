@@ -125,7 +125,8 @@ public class StateManager {
 	                    e.printStackTrace();
 	                }
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("State Manager's socket: Disconnected");
+					break;
 				}  
 			}
 		}

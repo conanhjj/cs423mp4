@@ -1,10 +1,14 @@
 package loadbalance;
 
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -15,6 +19,7 @@ import policy.SenderInitTransferPolicy;
 import policy.TransferPolicy;
 import jobs.Job;
 import jobs.JobResult;
+import jobs.MatrixAdditionJob;
 import jobs.TransferManager;
 import jobs.WorkerThread;
 import state.HardwareMonitor;
@@ -30,6 +35,7 @@ public class Adaptor extends JFrame{
 	private Container pane;
 	private JLabel localLabel;
 	private JLabel remoteLabel;
+	private JButton loadButton;
 	private DefaultListModel localListModel;
 	private DefaultListModel remoteListModel;
 	
@@ -77,11 +83,28 @@ public class Adaptor extends JFrame{
 		remoteLabel.setBounds(330, 30, 100, 30);
 		
 		JList localList = new JList(localListModel = new DefaultListModel());
-		localList.setBounds(30, 80, 150, 250);
+		localList.setBounds(30, 80, 200, 250);
 		
 		JList remoteList = new JList(remoteListModel = new DefaultListModel());
-		remoteList.setBounds(330, 80, 150, 250);
+		remoteList.setBounds(330, 80, 200, 250);
 		
+		loadButton = new JButton("Load Work");
+		loadButton.setBounds(150, 10, 80, 40);
+		loadButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				loadButton.setEnabled(false);
+				try {
+					loadJobs(MatrixAdditionJob.splitJobs("mat1"));
+				} catch (FileNotFoundException e) {
+					System.out.println("file not found.");
+				}
+			}
+			
+		});
+		
+		pane.add(loadButton);
 		pane.add(localLabel);
 		pane.add(remoteLabel);
 		pane.add(remoteList);
@@ -103,7 +126,7 @@ public class Adaptor extends JFrame{
     	
     	Job job = workerThread.getJobQueue().popIfLengthExceed(THRESHOLD, transferPolicy.selectionPolicy);
     	if(job != null)
-    		transferManager.sendJob(job);
+    		sendJob(job);
     }
 
     public WorkerThread getWorkerThread() {
@@ -121,8 +144,10 @@ public class Adaptor extends JFrame{
 		}
     }
     
-    public void addJob(Job job){
-    	localListModel.addElement(job.toString());
+    public synchronized void addJob(Job job){
+    	localListModel.addElement(job.getID());
+    	remoteListModel.removeElement(job.getID());
+    	
     	getJobQueue().append(job);
     }
 
@@ -149,7 +174,6 @@ public class Adaptor extends JFrame{
 			Job job = transferPolicy.getJobIfTransferable();
 			if(job != null){
 				sendJob(job);
-				remoteListModel.addElement(job.toString());
 			}
 		}
 		
@@ -169,16 +193,24 @@ public class Adaptor extends JFrame{
 
     private void finishedAll(){
     	System.out.println("result = " + result.getResult());
+    	loadButton.setEnabled(true);
     }
     
-    private void sendJob(Job job){
+    private synchronized void sendJob(Job job){
+    	if(!job.isRequest){
+    		this.localListModel.removeElement(job.getID());
+    		if(this.localJobIDs.contains(job.getID()))
+    			this.remoteListModel.addElement(job.getID());
+    	}
     	transferManager.sendJob(job);
     }
     
     public synchronized void jobFinished(Job job) {
     	//local job
     	if(localJobIDs.contains(job.getID())){
-    		System.out.println("local finished. ID: " + job.getID() +  ", n = " + this.n_unfinished_part);
+    		System.out.println("finished. ID: " + job.getID() +  ", n = " + this.n_unfinished_part);
+    		this.localListModel.removeElement(job.getID());
+    		this.remoteListModel.removeElement(job.getID());
 	    	if(result == null)
 	    		result = job.getResult();
 	    	else
@@ -189,7 +221,7 @@ public class Adaptor extends JFrame{
     	}
     	// remote job
     	else{
-    		System.out.println("remote finished");
+    		System.out.println("remote finished. ID: " + job.getID());
     		this.sendJob(job);
     	}
     }

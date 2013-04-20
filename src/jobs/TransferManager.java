@@ -109,7 +109,8 @@ public class TransferManager {
 	                    e.printStackTrace();
 	                }
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Transfer Manager's socket: Disconnected.");
+					break;
 				}  
 			}
 		}
