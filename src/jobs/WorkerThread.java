@@ -41,15 +41,17 @@ public class WorkerThread {
             @Override
             public void run() {
                 while(!stopWork) {
-                    Job job;
-                    if((job=getJobQueue().pop())!=null && getCurRunJob() == null) {
+                    if(getJobQueue().isEmpty() && getCurRunJob() == null) {
                         Util.sleep(NO_JOB_SLEEP_INTERVAL);
                         continue;
                     }
 
                     if(!isSuspended.get()) {
-                        if(getCurRunJob() == null)
-                            setCurRunJob(job);
+                        if(getCurRunJob() == null) {
+                            Job job = getJobQueue().pop();
+                            if(job != null)
+                                setCurRunJob(job);
+                        }
                         if(!getCurRunJob().isFinished())
                             getCurRunJob().run();
 

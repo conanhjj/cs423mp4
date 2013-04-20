@@ -16,6 +16,9 @@ public class WorkerThreadManager {
     private JobQueue jobQueue;
     private Integer throttling;
 
+    private static Integer LOW_THROTTLING = 30;
+    private static Integer HIGH_THROTTLING = 70;
+
 
     public WorkerThreadManager(Adaptor adaptor) {
         threadPool = new ArrayList<WorkerThread>();
@@ -35,6 +38,7 @@ public class WorkerThreadManager {
     public void start() {
         for(WorkerThread wt : threadPool) {
             wt.start();
+            wt.setThrottling(LOW_THROTTLING);
         }
     }
 
@@ -63,24 +67,29 @@ public class WorkerThreadManager {
 
     public void setHighThrottling() {
         synchronized (this) {
-            throttling = 70;
+            throttling = HIGH_THROTTLING;
             setThrottling(throttling);
         }
     }
 
     public void setLowThrottling() {
         synchronized (this) {
+            throttling = LOW_THROTTLING;
             setThrottling(throttling);
         }
     }
 
     public Integer getThrottling() {
-        return throttling;
+        synchronized (this) {
+            return throttling;
+        }
     }
 
     private void setThrottling(int percentage) {
-        for(WorkerThread wt : threadPool) {
-            wt.setThrottling(percentage);
+        synchronized (this) {
+            for(WorkerThread wt : threadPool) {
+                wt.setThrottling(percentage);
+            }
         }
     }
 }
