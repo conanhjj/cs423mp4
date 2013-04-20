@@ -32,8 +32,9 @@
     <target name="lb.jar" depends="lb.compile">
         <copy todir="${deploy.home}">
             <fileset dir="${basedir}">
-                <include name="log4j.properties" />
+                <include name="*.properties" />
                 <include name="*.sh" />
+                <include name="mat1" />
                 <include name="protobuf" />
             </fileset>
         </copy>

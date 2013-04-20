@@ -22,7 +22,7 @@ public class LoadBalancer {
     private static String[] parameters;
 
     private static final String BAR =
-            "----------------------------------------------------------------------------------------";
+            "------------------------------------------------------------------------------";
 
     public static void main(String[] args) {
         log4jConfigure();
