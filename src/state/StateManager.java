@@ -21,6 +21,7 @@ public class StateManager {
 	public Socket socket;
 	private State state;
 	private State remoteState;
+	public boolean isRunning;
 	private LoopSender loopSender;
 	private Listener listener;
 	private int PORT_NO;
@@ -37,6 +38,7 @@ public class StateManager {
 	}
 	
 	public void init(){
+		isRunning = true;
 		loopSender = new LoopSender(this);
 		listener = new Listener(this);
 	}
@@ -92,14 +94,14 @@ public class StateManager {
 		}
 
 		public void run() {
-			while(true)	{
+			while(isRunning)	{
 				stateManager.sendState();
 				
 				try {
 					sleep(stateManager.interval);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					break;
 				}
 			}
 		}
@@ -114,7 +116,7 @@ public class StateManager {
 		}
 
 		public void run() {
-			while(true)	{
+			while(isRunning)	{
 				// read message from socket;
 				try {
 					ObjectInputStream objectInput = new ObjectInputStream(stateManager.socket.getInputStream());

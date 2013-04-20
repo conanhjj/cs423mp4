@@ -8,8 +8,10 @@ import com.sun.management.OperatingSystemMXBean;
 
 public class HardwareMonitor extends Thread{
 	private double cpuUtilization;
+	public boolean isRunning;
 	
 	public HardwareMonitor(){
+		isRunning = true;
 		start();
 	}
 	
@@ -26,16 +28,18 @@ public class HardwareMonitor extends Thread{
 	
 	@Override
 	public void run(){
-		setCpuUtilization(getCpuUtilization());
-		try {
-			sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while(isRunning){
+			setCpuUtilization(getUpdatedCpuUtilization());
+			try {
+				sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	private static double getCpuUtilzation(){
+	private static double getUpdatedCpuUtilization(){
 		
 		OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 	    RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();

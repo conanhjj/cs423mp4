@@ -21,6 +21,7 @@ public class TransferManager {
 	private Listener listener;
 	private Adaptor adaptor;
 	private int PORT_NO = 20001;
+	public boolean isRunning;
 	
 	public TransferManager(int serverPort, Adaptor adaptor){
 		PORT_NO = serverPort;
@@ -29,6 +30,7 @@ public class TransferManager {
 	}
 	
 	public void init(){
+		isRunning = true;
 		listener = new Listener(this);
 	}
 	
@@ -95,7 +97,7 @@ public class TransferManager {
 		}
 
 		public void run() {
-			while(true)	{
+			while(isRunning)	{
 				// read message from socket;
 				try {
 					ObjectInputStream objectInput = new ObjectInputStream(transferManager.socket.getInputStream());

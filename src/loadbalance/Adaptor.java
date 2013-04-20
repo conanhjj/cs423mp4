@@ -3,6 +3,8 @@ package loadbalance;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +36,8 @@ public class Adaptor extends JFrame{
 	private Container pane;
 	private JLabel localLabel;
 	private JLabel remoteLabel;
+	private JLabel cpuUtilLabel;
+	private JLabel resultLabel;
 	private JButton loadButton;
 	private DefaultListModel localListModel;
 	private DefaultListModel remoteListModel;
@@ -61,9 +65,9 @@ public class Adaptor extends JFrame{
 		stateManager = new StateManager(serverPort);
 		transferManager = new TransferManager(serverPort + 1, this);
 		hardwareMonitor = new HardwareMonitor();
+		initGUI(serverPort);
 		transferChecker = new TransferChecker();
 		localJobIDs = new HashSet<String>();
-		initGUI(serverPort);
 	}
 	
 	private void initGUI(int serverPort){
@@ -80,6 +84,14 @@ public class Adaptor extends JFrame{
 		
 		remoteLabel = new JLabel("remote node");
 		remoteLabel.setBounds(330, 30, 100, 30);
+		
+		cpuUtilLabel = new JLabel("0 %");
+		cpuUtilLabel.setBounds(450, 30, 100, 30);
+		cpuUtilLabel.setAlignmentX(RIGHT_ALIGNMENT);
+		
+		resultLabel = new JLabel("result: ");
+		resultLabel.setBounds(330, 5, 220, 25);
+		resultLabel.setAlignmentX(LEFT_ALIGNMENT);
 		
 		JList localList = new JList(localListModel = new DefaultListModel());
 		localList.setBounds(30, 80, 200, 250);
@@ -100,14 +112,25 @@ public class Adaptor extends JFrame{
 					System.out.println("file not found.");
 				}
 			}
-			
+		
 		});
 		
+		pane.add(resultLabel);
+		pane.add(cpuUtilLabel);
 		pane.add(loadButton);
 		pane.add(localLabel);
 		pane.add(remoteLabel);
 		pane.add(remoteList);
 		pane.add(localList);
+		
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter()
+	    {
+	          public void windowClosing(WindowEvent e)
+	          {
+	              stop();
+	          }
+	    });
 		this.setVisible(true);
 	}
 	
@@ -130,6 +153,10 @@ public class Adaptor extends JFrame{
 
     public void stop() {
         wtManager.stop();
+        hardwareMonitor.isRunning = false;
+        stateManager.isRunning = false;
+        transferManager.isRunning = false;
+        System.exit(0);
     }
     
     public void loadJobs(List<Job> jobs){
@@ -137,6 +164,7 @@ public class Adaptor extends JFrame{
     	this.n_unfinished_part = jobs.size();
     	System.out.println("size " + this.n_unfinished_part);
     	this.localJobIDs = new HashSet<String>();
+    	resultLabel.setText("result: ...processing...");
 		for(Job job : jobs){
 			localJobIDs.add(job.getID());
 			addJob(job);
@@ -165,6 +193,7 @@ public class Adaptor extends JFrame{
 		public synchronized void checkForAvailableTransfer(){
 			localState = new state.State(wtManager.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
 			stateManager.setState(localState);
+			cpuUtilLabel.setText(localState.cpuUtilization + " %");
 			remoteState = stateManager.getRemoteState();
 			
 			// transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
@@ -192,6 +221,7 @@ public class Adaptor extends JFrame{
 
     private void finishedAll(){
     	System.out.println("result = " + result.getResult());
+    	resultLabel.setText("result: " + result.getResult());
     	loadButton.setEnabled(true);
     }
     
@@ -228,4 +258,5 @@ public class Adaptor extends JFrame{
     public List<Job> getCurRunningJobs() {
         return wtManager.getCurRunningJobs();
     }
+    
 }
