@@ -21,10 +21,8 @@ public abstract class Job implements Serializable {
 
     protected String jobName;
     protected byte[] binaryCode;
-    protected Integer jobSize;
     protected boolean loadedToMemory;
     public boolean isRequest;
-    private AtomicBoolean hasNotified;
 
     private static Integer MAX_JOB_SIZE = 65536;
 
@@ -43,7 +41,6 @@ public abstract class Job implements Serializable {
         binaryCode = new byte[MAX_JOB_SIZE];
         loadedToMemory = false;
         isRequest = false;
-        hasNotified = new AtomicBoolean(false);
     }
     
     public Job(boolean isRequest){
@@ -68,76 +65,8 @@ public abstract class Job implements Serializable {
         return jobName + "_" + jobId.toString();
     }
 
-    public boolean loadJobFromFile() {
-        DataInputStream dis;
-
-        try {
-            dis = new DataInputStream(new FileInputStream(jobName));
-
-            jobSize = dis.read(binaryCode);
-            if(jobSize.equals(MAX_JOB_SIZE)) {
-                System.err.println("Job too large! Exceeds 64k");
-                dis.close();
-                return false;
-            }
-            dis.close();
-            loadedToMemory  = true;
-            return true;
-        } catch (FileNotFoundException ex) {
-            logger.error("Couldn't find job file");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean isLoaded() {
-        synchronized (this) {
-            return loadedToMemory;
-        }
-    }
-
-
-    public boolean saveJobToFile() {
-        if(!loadedToMemory) {
-            System.out.println("Job has not been loaded to memory yet");
-            return false;
-        }
-
-        File file = new File(getExecuteName());
-        DataOutputStream dos;
-        try {
-            dos = new DataOutputStream(new FileOutputStream(file));
-            dos.write(binaryCode, 0, jobSize);
-            dos.close();
-
-            if(!file.setExecutable(true)) {
-                System.err.println("Setting executing permission for job file failed");
-                return false;
-            }
-            return true;
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     public String getID () {
         return jobId.toString();
-    }
-
-    public Integer getSize() {
-        return jobSize;
-    }
-
-    public boolean hasNotified() {
-        return hasNotified.get();
-    }
-
-    public void setAsNotified() {
-        hasNotified.set(true);
     }
 
     public abstract String toString();
