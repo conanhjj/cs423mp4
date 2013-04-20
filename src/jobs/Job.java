@@ -21,7 +21,6 @@ public abstract class Job implements Serializable {
 
     protected String jobName;
     protected byte[] binaryCode;
-    protected boolean loadedToMemory;
     public boolean isRequest;
 
     private static Integer MAX_JOB_SIZE = 65536;
@@ -39,7 +38,6 @@ public abstract class Job implements Serializable {
         jobId = UUID.randomUUID();
 //        jobResult = new JobResult();
         binaryCode = new byte[MAX_JOB_SIZE];
-        loadedToMemory = false;
         isRequest = false;
     }
     
