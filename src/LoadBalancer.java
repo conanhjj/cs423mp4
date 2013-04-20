@@ -4,6 +4,7 @@ import jobs.MatrixAdditionJob;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import util.LBConfiguration;
 import util.Util;
 
 
@@ -160,7 +161,10 @@ public class LoadBalancer {
         CommandMap.init();
         logger.info("Load "+ CommandMap.size() + " command(s) successfully");
 
-        //TODO: put all your init code here
+        if(LBConfiguration.init())
+            logger.info("Configuration initializes successfully");
+        else
+            logger.error("Couldn't initialize configuration");
         logger.info("Program initializes successfully");
         System.out.println(BAR);
     }
