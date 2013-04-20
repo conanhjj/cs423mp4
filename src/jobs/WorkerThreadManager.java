@@ -23,7 +23,7 @@ public class WorkerThreadManager {
     public WorkerThreadManager(Adaptor adaptor) {
         threadPool = new ArrayList<WorkerThread>();
         this.adaptor = adaptor;
-        jobQueue = new JobQueue();
+        jobQueue = new JobQueue(adaptor);
         init();
     }
 

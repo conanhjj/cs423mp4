@@ -45,6 +45,8 @@ public class Adaptor extends JFrame{
 	private DefaultListModel localListModel;
 	private DefaultListModel remoteListModel;
 	
+	private final boolean isPeriodicInformationPolicy = true;
+	
 	JobResult result;
 	HashSet<String> localJobIDs;
 	int n_unfinished_part;
@@ -65,7 +67,7 @@ public class Adaptor extends JFrame{
 		super("Load Balancer");
         wtManager= new WorkerThreadManager(this);
         wtManager.start();
-		stateManager = new StateManager(serverPort);
+		stateManager = new StateManager(serverPort, isPeriodicInformationPolicy);
 		transferManager = new TransferManager(serverPort + 1, this);
 		hardwareMonitor = new HardwareMonitor();
 		initGUI(serverPort);
@@ -89,11 +91,11 @@ public class Adaptor extends JFrame{
 		remoteLabel.setBounds(330, 60, 100, 30);
 		
 		cpuUtilLabel = new JLabel("0 %");
-		cpuUtilLabel.setBounds(200, 30, 100, 30);
+		cpuUtilLabel.setBounds(330, 30, 150, 30);
 		cpuUtilLabel.setAlignmentX(RIGHT_ALIGNMENT);
 		
 		throttlingLabel = new JLabel("Throttling: 70 %");
-		throttlingLabel.setBounds(30, 30, 100, 30);
+		throttlingLabel.setBounds(30, 30, 150, 30);
 		throttlingLabel.setAlignmentX(LEFT_ALIGNMENT);
 		
 		resultLabel = new JLabel("result: ");
@@ -199,9 +201,10 @@ public class Adaptor extends JFrame{
 		}
 		
 		public synchronized void checkForAvailableTransfer(){
-			localState = new state.State(wtManager.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
+			localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), hardwareMonitor.getCpuUtilization());
 			stateManager.setState(localState);
 			cpuUtilLabel.setText("CPU: " + String.format("%.2f", localState.cpuUtilization) + " %");
+			throttlingLabel.setText("Throttling: " + localState.throttling + " %");
             if(localState.cpuUtilization > 0.6) {
                 wtManager.setLowThrottling();
             } else if(localState.cpuUtilization < 0.2) {
@@ -278,4 +281,11 @@ public class Adaptor extends JFrame{
         return wtManager.getCurRunningJobs();
     }
     
+    public void queueSizeChange(){
+    	if(stateManager.isPeriodic) return;
+    	localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), hardwareMonitor.getCpuUtilization());
+		stateManager.setState(localState);
+    	stateManager.sendState();
+    	//System.out.println("queue change");
+    }
 }

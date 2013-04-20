@@ -22,19 +22,25 @@ public class StateManager {
 	private State state;
 	private State remoteState;
 	public boolean isRunning;
+	public boolean isPeriodic;
 	private LoopSender loopSender;
 	private Listener listener;
 	private int PORT_NO;
 	
-	public StateManager(int interval, int serverPort) {
+	public StateManager(int interval, int serverPort, boolean isPeriodic) {
 		this.interval = interval;
 		PORT_NO = serverPort;
+		this.isPeriodic = isPeriodic;
 		setState(new State(-1, -1, -1));
 		new ServerListener(this);
 	}
 	
+	public StateManager(int serverPort, boolean isPeriodic){
+		this(5000, serverPort, isPeriodic);
+	}
+	
 	public StateManager(int serverPort){
-		this(5000, serverPort);
+		this(serverPort, true);
 	}
 	
 	public void init(){
@@ -67,7 +73,7 @@ public class StateManager {
 		this.remoteState = new State(state);
 	}
 	
-	private synchronized void sendState(){
+	public synchronized void sendState(){
 		try 
         {
 			//System.out.println("send current state: " + state);
@@ -94,9 +100,8 @@ public class StateManager {
 		}
 
 		public void run() {
-			while(isRunning)	{
+			while(isRunning && isPeriodic)	{
 				stateManager.sendState();
-				
 				try {
 					sleep(stateManager.interval);
 				} catch (InterruptedException e) {

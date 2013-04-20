@@ -5,18 +5,23 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import loadbalance.Adaptor;
+
 public class JobQueue implements Iterable<Job>{
 	private final int NEWEST = -1;
 	private final int OLDEST = -2;
     private List<Job> jobList;
+    private Adaptor adaptor;
 
-    public JobQueue() {
+    public JobQueue(Adaptor adaptor) {
+    	this.adaptor = adaptor;
         jobList = new LinkedList<Job>();
     }
 
     public void append(Job job) {
         synchronized (this) {
             jobList.add(job);
+            adaptor.queueSizeChange();
         }
     }
 
@@ -33,8 +38,11 @@ public class JobQueue implements Iterable<Job>{
         synchronized (this) {
             if(isEmpty())
                 return null;
-            else
-                return jobList.remove(0);
+            else{
+                Job temp = jobList.remove(0);
+                adaptor.queueSizeChange();
+                return temp;
+            }
         }
     }
     
@@ -42,7 +50,9 @@ public class JobQueue implements Iterable<Job>{
     	synchronized (this) {
     		if(jobList.size() > THRESHOLD){
     			index = (index == OLDEST) ? 0 : (index == NEWEST) ? (jobList.size() -1) : index;
-    			return jobList.remove(index);
+    			Job temp = jobList.remove(index);
+    			adaptor.queueSizeChange();
+    			return temp;
     		}
     	}
     	return null;
@@ -60,11 +70,13 @@ public class JobQueue implements Iterable<Job>{
         }
     }
 
+    /*
     public static void main(String[] args) {
         JobQueue jobQueue = new JobQueue();
         Job job = jobQueue.pop();
         System.out.println(job);
     }
+    */
 
     @Override
     public Iterator<Job> iterator() {
