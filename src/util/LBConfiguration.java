@@ -26,6 +26,11 @@ public class LBConfiguration {
     }
 
     public static Integer getThreadCount() {
-        return Integer.valueOf(properties.getProperty("WorkerThreadCount"));
+        String val = properties.getProperty("WorkerThreadCount");
+        if(val == null) {
+            logger.error("Couldn't find property WorkerThreadCount, using default value 1");
+            return 1;
+        } else
+            return Integer.valueOf(val);
     }
 }

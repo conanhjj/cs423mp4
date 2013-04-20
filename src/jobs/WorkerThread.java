@@ -12,7 +12,7 @@ public class WorkerThread {
 
     private Thread mainThread;
     private Thread monitorThread;
-    private JobQueue jobQueue;
+    private WorkerThreadManager wtm;
     private Adaptor adaptor;
 
     private boolean stopWork;
@@ -27,12 +27,12 @@ public class WorkerThread {
 
     private Job curRunJob;
 
-    public WorkerThread(Adaptor adaptor) {
-        jobQueue = new JobQueue();
+    public WorkerThread(Adaptor adaptor, WorkerThreadManager wtm) {
         stopWork = false;
         isSuspended = new AtomicBoolean(false);
         curRunJob = null;
         this.adaptor = adaptor;
+        this.wtm = wtm;
     }
 
     public void start() {
@@ -40,14 +40,14 @@ public class WorkerThread {
             @Override
             public void run() {
                 while(!stopWork) {
-                    if(jobQueue.isEmpty() && getCurRunJob() == null) {
+                    if(getJobQueue().isEmpty() && getCurRunJob() == null) {
                         Util.sleep(NO_JOB_SLEEP_INTERVAL);
                         continue;
                     }
 
                     if(!isSuspended.get()) {
                         if(getCurRunJob() == null)
-                            setCurRubJob(jobQueue.pop());
+                            setCurRubJob(getJobQueue().pop());
                         if(!getCurRunJob().isFinished())
                             getCurRunJob().run();
 
@@ -98,26 +98,6 @@ public class WorkerThread {
         isSuspended.set(false);
     }
 
-    public void addJob(Job job) {
-        synchronized (this) {
-            jobQueue.append(job);
-        }
-    }
-
-    public boolean isEmpty() {
-        synchronized (this) {
-            return jobQueue.isEmpty();
-        }
-    }
-
-    public JobQueue getJobQueue() {
-        return jobQueue;
-    }
-
-    public Integer getJobQueueSize() {
-        return jobQueue.size();
-    }
-
     public boolean setThrottling(Integer percentage) {
         if(percentage <=0 || percentage >= 100) {
             logger.error("Wrong Throttling Parameter");
@@ -139,6 +119,10 @@ public class WorkerThread {
         synchronized (this) {
             return curRunJob;
         }
+    }
+
+    private JobQueue getJobQueue() {
+        return wtm.getJobQueue();
     }
 
 

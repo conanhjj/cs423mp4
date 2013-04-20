@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-import jobs.JobQueue;
+import jobs.*;
 import policy.ReceiverInitTransferPolicy;
 import policy.SenderInitTransferPolicy;
 import policy.TransferPolicy;
@@ -21,7 +21,6 @@ import jobs.Job;
 import jobs.JobResult;
 import jobs.MatrixAdditionJob;
 import jobs.TransferManager;
-import jobs.WorkerThread;
 import state.HardwareMonitor;
 import state.State;
 import state.StateManager;
@@ -49,7 +48,7 @@ public class Adaptor extends JFrame{
 	TransferManager transferManager;
 	TransferChecker transferChecker;
 	HardwareMonitor hardwareMonitor;
-	WorkerThread workerThread;
+    WorkerThreadManager wtManager;
 	
 	TransferPolicy transferPolicy;
 	final int THRESHOLD = 2;
@@ -57,8 +56,8 @@ public class Adaptor extends JFrame{
 	
 	public Adaptor(int serverPort){
 		super("Load Balancer");
-		workerThread = new WorkerThread(this);
-		workerThread.start();
+        wtManager= new WorkerThreadManager(this);
+        wtManager.start();
 		stateManager = new StateManager(serverPort);
 		transferManager = new TransferManager(serverPort + 1, this);
 		hardwareMonitor = new HardwareMonitor();
@@ -118,19 +117,19 @@ public class Adaptor extends JFrame{
 	}
 
     public JobQueue getJobQueue() {
-        return workerThread.getJobQueue();
+        return wtManager.getJobQueue();
     }
     
     public synchronized void processJobRequest(){
     	if(transferPolicy == null) return;
     	
-    	Job job = workerThread.getJobQueue().popIfLengthExceed(THRESHOLD, transferPolicy.selectionPolicy);
+    	Job job = wtManager.getJobQueue().popIfLengthExceed(THRESHOLD, transferPolicy.selectionPolicy);
     	if(job != null)
     		sendJob(job);
     }
 
-    public WorkerThread getWorkerThread() {
-        return workerThread;
+    public void stop() {
+        wtManager.stop();
     }
     
     public void loadJobs(List<Job> jobs){
@@ -164,12 +163,12 @@ public class Adaptor extends JFrame{
 		}
 		
 		public synchronized void checkForAvailableTransfer(){
-			localState = new state.State(workerThread.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
+			localState = new state.State(wtManager.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
 			stateManager.setState(localState);
 			remoteState = stateManager.getRemoteState();
 			
 			// transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
-			transferPolicy = (new ReceiverInitTransferPolicy(workerThread.getJobQueue(), remoteState));
+			transferPolicy = (new ReceiverInitTransferPolicy(wtManager.getJobQueue(), remoteState));
 			
 			Job job = transferPolicy.getJobIfTransferable();
 			if(job != null){

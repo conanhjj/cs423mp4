@@ -54,7 +54,7 @@ public class LoadBalancer {
     }
 
     private static void stop() {
-        adaptor.getWorkerThread().stop();
+        adaptor.stop();
     }
 
     private static final String FORMAT_STRING_COMMAND = "%-35s%-35s\n";
