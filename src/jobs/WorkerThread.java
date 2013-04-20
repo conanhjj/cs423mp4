@@ -5,11 +5,11 @@ import loadbalance.Adaptor;
 import org.apache.log4j.Logger;
 import util.Util;
 
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WorkerThread {
 
+    private Integer id;
     private Thread mainThread;
     private Thread monitorThread;
     private WorkerThreadManager wtm;
@@ -27,12 +27,13 @@ public class WorkerThread {
 
     private Job curRunJob;
 
-    public WorkerThread(Adaptor adaptor, WorkerThreadManager wtm) {
+    public WorkerThread(Adaptor adaptor, WorkerThreadManager wtm, Integer id) {
         stopWork = false;
         isSuspended = new AtomicBoolean(false);
         curRunJob = null;
         this.adaptor = adaptor;
         this.wtm = wtm;
+        this.id = id;
     }
 
     public void start() {
@@ -47,7 +48,7 @@ public class WorkerThread {
 
                     if(!isSuspended.get()) {
                         if(getCurRunJob() == null)
-                            setCurRubJob(getJobQueue().pop());
+                            setCurRunJob(getJobQueue().pop());
                         if(!getCurRunJob().isFinished())
                             getCurRunJob().run();
 
@@ -55,7 +56,7 @@ public class WorkerThread {
                             System.out.println(getCurRunJob().getResult());
                             if(adaptor != null)
                                 adaptor.jobFinished(getCurRunJob());
-                            setCurRubJob(null);
+                            clearCurJob();
                         }
                     }
                 }
@@ -109,9 +110,10 @@ public class WorkerThread {
         return true;
     }
 
-    private void setCurRubJob(Job job) {
+    private void setCurRunJob(Job job) {
         synchronized (this) {
             curRunJob = job;
+            job.setWorkerThreadId(id);
         }
     }
 
@@ -121,9 +123,18 @@ public class WorkerThread {
         }
     }
 
+    public void clearCurJob() {
+        synchronized (this) {
+            curRunJob = null;
+        }
+    }
+
     private JobQueue getJobQueue() {
         return wtm.getJobQueue();
     }
 
+    private Integer getId() {
+        return id;
+    }
 
 }

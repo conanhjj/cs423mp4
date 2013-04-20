@@ -137,7 +137,8 @@ public class LoadBalancer {
         List<Job> curRunningJobs = adaptor.getCurRunningJobs();
         if(curRunningJobs.size() != 0)
             for(Job job : curRunningJobs)
-                System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName(), "Running");
+                System.out.printf(
+                FORMAT_STRING_LIST_JOB, job.getJobName(), "Running(WorkerThread " + job.getWorkerThreadId() + ")");
 
         JobQueue jobQueue = adaptor.getJobQueue();
         for(Job job : jobQueue) {

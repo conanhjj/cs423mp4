@@ -26,7 +26,7 @@ public class WorkerThreadManager {
     public void init() {
         threadCount = LBConfiguration.getThreadCount();
         for(int i=0;i<threadCount;++i) {
-            WorkerThread wt = new WorkerThread(adaptor, this);
+            WorkerThread wt = new WorkerThread(adaptor, this, i+1);
             threadPool.add(wt);
         }
     }

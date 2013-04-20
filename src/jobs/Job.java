@@ -22,6 +22,7 @@ public abstract class Job implements Serializable {
     protected String jobName;
     protected byte[] binaryCode;
     public boolean isRequest;
+    private Integer workerThreadId;
 
     private static Integer MAX_JOB_SIZE = 65536;
 
@@ -65,6 +66,14 @@ public abstract class Job implements Serializable {
 
     public String getID () {
         return jobId.toString();
+    }
+
+    public void setWorkerThreadId(Integer id) {
+        workerThreadId = id;
+    }
+
+    public Integer getWorkerThreadId() {
+        return workerThreadId;
     }
 
     public abstract String toString();
