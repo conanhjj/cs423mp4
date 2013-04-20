@@ -123,7 +123,7 @@ public class LoadBalancer {
 //        adaptor.getWorkerThread().addJob(job);
     }
 
-    private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s%-25s\n";
+    private static final String FORMAT_STRING_LIST_JOB = "%-25s\n";
     public static void listJobs() {
         if(parameters.length != 1) {
             System.out.println("Wrong command format. No argument for list jobs command");
@@ -132,9 +132,9 @@ public class LoadBalancer {
 
         JobQueue jobQueue = adaptor.getJobQueue();
         System.out.println(BAR);
-        System.out.printf(FORMAT_STRING_LIST_JOB,"Job Name", "Job Size", "IsLoadedToMemory");
+        System.out.printf(FORMAT_STRING_LIST_JOB,"Job Name");
         for(Job job : jobQueue) {
-            System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName(), job.getSize(), job.isLoaded() ? "T" : "F");
+            System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName());
         }
         System.out.println(BAR);
     }
