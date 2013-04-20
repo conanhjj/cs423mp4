@@ -71,7 +71,10 @@ public class WorkerThread {
             @Override
             public void run() {
                 while(!stopWork || getCurRunJob()!= null) {
-                    if(getCurRunJob() == null) continue;
+                    if(getCurRunJob() == null) {
+                        Util.sleep(NO_JOB_SLEEP_INTERVAL);
+                        continue;
+                    }
                     try {
                         getCurRunJob().resume();
                         Util.sleep(RUNNING_TIME);
