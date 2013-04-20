@@ -18,6 +18,7 @@ import javax.swing.JList;
 import jobs.*;
 import policy.ReceiverInitTransferPolicy;
 import policy.SenderInitTransferPolicy;
+import policy.SymmetricTransferPolicy;
 import policy.TransferPolicy;
 import jobs.Job;
 import jobs.JobResult;
@@ -26,6 +27,7 @@ import jobs.TransferManager;
 import state.HardwareMonitor;
 import state.State;
 import state.StateManager;
+import util.LBConfiguration;
 
 
 public class Adaptor extends JFrame{
@@ -207,10 +209,14 @@ public class Adaptor extends JFrame{
             }
 
 			remoteState = stateManager.getRemoteState();
-			
-			// transferPolicy = (new SenderInitTransferPolicy(wtManager.getJobQueue(), remoteState));
-			 transferPolicy = (new ReceiverInitTransferPolicy(wtManager.getJobQueue(), remoteState));
-			// transferPolicy = (new SymmetricTransferPolicy(wtManager.getJobQueue(), remoteState));
+
+            String policy = LBConfiguration.getPolicy();
+            if(policy.equals(LBConfiguration.RECEIVER))
+                transferPolicy = (new ReceiverInitTransferPolicy(wtManager.getJobQueue(), remoteState));
+            else if(policy.equals(LBConfiguration.SENDER))
+                transferPolicy = (new SenderInitTransferPolicy(wtManager.getJobQueue(), remoteState));
+            else
+			    transferPolicy = (new SymmetricTransferPolicy(wtManager.getJobQueue(), remoteState));
 			
 			Job job = transferPolicy.getJobIfTransferable();
 			if(job != null){

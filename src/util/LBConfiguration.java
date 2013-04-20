@@ -33,4 +33,26 @@ public class LBConfiguration {
         } else
             return Integer.valueOf(val);
     }
+
+    public static String RECEIVER = "Receiver";
+    public static String SENDER = "Sender";
+    public static String SYMMETRIC = "Symmetric";
+
+    public static String getPolicy() {
+        String val = properties.getProperty("TransferPolicy");
+        if(val == null) {
+            logger.error("Couldn't find TransferPolicy, using Receiver instead");
+            return RECEIVER;
+        }
+        if(val.equals(RECEIVER)) {
+            return RECEIVER;
+        } else if(val.equals(SENDER)) {
+            return SENDER;
+        } else if(val.equals(SYMMETRIC)) {
+            return SYMMETRIC;
+        } else {
+            logger.error("Wrong value for TransferPolicy, using Receiver instead");
+            return RECEIVER;
+        }
+    }
 }
