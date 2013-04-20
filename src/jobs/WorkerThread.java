@@ -115,7 +115,7 @@ public class WorkerThread {
         }
     }
 
-    private Job getCurRunJob() {
+    public Job getCurRunJob() {
         synchronized (this) {
             return curRunJob;
         }

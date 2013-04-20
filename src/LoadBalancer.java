@@ -9,6 +9,7 @@ import util.Util;
 
 
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
 import loadbalance.Adaptor;
@@ -124,18 +125,23 @@ public class LoadBalancer {
 //        adaptor.getWorkerThread().addJob(job);
     }
 
-    private static final String FORMAT_STRING_LIST_JOB = "%-25s\n";
+    private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s\n";
     public static void listJobs() {
         if(parameters.length != 1) {
             System.out.println("Wrong command format. No argument for list jobs command");
             return;
         }
 
-        JobQueue jobQueue = adaptor.getJobQueue();
         System.out.println(BAR);
-        System.out.printf(FORMAT_STRING_LIST_JOB,"Job Name");
+        System.out.printf(FORMAT_STRING_LIST_JOB,"Job Name", "Job Status");
+        List<Job> curRunningJobs = adaptor.getCurRunningJobs();
+        if(curRunningJobs.size() != 0)
+            for(Job job : curRunningJobs)
+                System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName(), "Running");
+
+        JobQueue jobQueue = adaptor.getJobQueue();
         for(Job job : jobQueue) {
-            System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName());
+            System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName(), "Pending");
         }
         System.out.println(BAR);
     }

@@ -6,6 +6,7 @@ import loadbalance.Adaptor;
 import util.LBConfiguration;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class WorkerThreadManager {
@@ -48,5 +49,14 @@ public class WorkerThreadManager {
         for(WorkerThread wt : threadPool) {
             wt.stop();
         }
+    }
+
+    public List<Job> getCurRunningJobs() {
+        List<Job> list = new LinkedList<Job>();
+        for(WorkerThread wt : threadPool) {
+            Job job = wt.getCurRunJob();
+            if(job != null) list.add(job);
+        }
+        return list;
     }
 }

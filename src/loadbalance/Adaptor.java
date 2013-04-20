@@ -224,4 +224,8 @@ public class Adaptor extends JFrame{
     		this.sendJob(job);
     	}
     }
+
+    public List<Job> getCurRunningJobs() {
+        return wtManager.getCurRunningJobs();
+    }
 }
