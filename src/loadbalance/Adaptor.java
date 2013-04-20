@@ -38,6 +38,7 @@ public class Adaptor extends JFrame{
 	private JLabel remoteLabel;
 	private JLabel cpuUtilLabel;
 	private JLabel resultLabel;
+	private JLabel throttlingLabel;
 	private JButton loadButton;
 	private DefaultListModel localListModel;
 	private DefaultListModel remoteListModel;
@@ -80,27 +81,31 @@ public class Adaptor extends JFrame{
 		pane.add(portLabel);
 		
 		localLabel = new JLabel("local node");
-		localLabel.setBounds(30, 30, 100, 30);
+		localLabel.setBounds(30, 60, 100, 30);
 		
 		remoteLabel = new JLabel("remote node");
-		remoteLabel.setBounds(330, 30, 100, 30);
+		remoteLabel.setBounds(330, 60, 100, 30);
 		
 		cpuUtilLabel = new JLabel("0 %");
-		cpuUtilLabel.setBounds(450, 30, 100, 30);
+		cpuUtilLabel.setBounds(200, 30, 100, 30);
 		cpuUtilLabel.setAlignmentX(RIGHT_ALIGNMENT);
+		
+		throttlingLabel = new JLabel("Throttling: 70 %");
+		throttlingLabel.setBounds(30, 30, 100, 30);
+		throttlingLabel.setAlignmentX(LEFT_ALIGNMENT);
 		
 		resultLabel = new JLabel("result: ");
 		resultLabel.setBounds(330, 5, 220, 25);
 		resultLabel.setAlignmentX(LEFT_ALIGNMENT);
 		
 		JList localList = new JList(localListModel = new DefaultListModel());
-		localList.setBounds(30, 80, 200, 250);
+		localList.setBounds(30, 90, 200, 250);
 		
 		JList remoteList = new JList(remoteListModel = new DefaultListModel());
-		remoteList.setBounds(330, 80, 200, 250);
+		remoteList.setBounds(330, 90, 200, 250);
 		
 		loadButton = new JButton("Load Work");
-		loadButton.setBounds(150, 10, 80, 40);
+		loadButton.setBounds(150, 5, 80, 30);
 		loadButton.addActionListener(new ActionListener(){
 
 			@Override
@@ -115,6 +120,7 @@ public class Adaptor extends JFrame{
 		
 		});
 		
+		pane.add(throttlingLabel);
 		pane.add(resultLabel);
 		pane.add(cpuUtilLabel);
 		pane.add(loadButton);
@@ -193,16 +199,18 @@ public class Adaptor extends JFrame{
 		public synchronized void checkForAvailableTransfer(){
 			localState = new state.State(wtManager.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
 			stateManager.setState(localState);
-			cpuUtilLabel.setText(localState.cpuUtilization + " %");
+			cpuUtilLabel.setText("CPU: " + String.format("%.2f", localState.cpuUtilization) + " %");
             if(localState.cpuUtilization > 0.6) {
                 wtManager.setLowThrottling();
             } else if(localState.cpuUtilization < 0.2) {
                 wtManager.setHighThrottling();
             }
+
 			remoteState = stateManager.getRemoteState();
 			
-			// transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
-			transferPolicy = (new ReceiverInitTransferPolicy(wtManager.getJobQueue(), remoteState));
+			// transferPolicy = (new SenderInitTransferPolicy(wtManager.getJobQueue(), remoteState));
+			 transferPolicy = (new ReceiverInitTransferPolicy(wtManager.getJobQueue(), remoteState));
+			// transferPolicy = (new SymmetricTransferPolicy(wtManager.getJobQueue(), remoteState));
 			
 			Job job = transferPolicy.getJobIfTransferable();
 			if(job != null){
