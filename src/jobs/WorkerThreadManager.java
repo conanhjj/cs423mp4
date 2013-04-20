@@ -33,6 +33,7 @@ public class WorkerThreadManager {
             WorkerThread wt = new WorkerThread(adaptor, this, i+1);
             threadPool.add(wt);
         }
+        throttling = LOW_THROTTLING;
     }
 
     public void start() {
