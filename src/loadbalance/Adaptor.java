@@ -194,6 +194,11 @@ public class Adaptor extends JFrame{
 			localState = new state.State(wtManager.getJobQueueSize(), 0, hardwareMonitor.getCpuUtilization());
 			stateManager.setState(localState);
 			cpuUtilLabel.setText(localState.cpuUtilization + " %");
+            if(localState.cpuUtilization > 0.6) {
+                wtManager.setLowThrottling();
+            } else if(localState.cpuUtilization < 0.2) {
+                wtManager.setHighThrottling();
+            }
 			remoteState = stateManager.getRemoteState();
 			
 			// transferPolicy = (new SenderInitTransferPolicy(workerThread.getJobQueue(), remoteState));
