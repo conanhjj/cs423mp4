@@ -111,7 +111,6 @@ public class LoadBalancer {
         }
 
         String fileName = parameters[1];
-        System.out.println("Load Job at " + new Date());
         loadJob(fileName);
     }
 
