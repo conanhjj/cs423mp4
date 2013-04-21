@@ -69,6 +69,8 @@ public class Adaptor extends JFrame{
 	TransferPolicy transferPolicy;
 	final int THRESHOLD = 2;
 	final int POLL_LIM = 1;
+
+    private Date startDate, endDate;
 	
 	public Adaptor(int serverPort){
 		super("Load Balancer");
@@ -179,7 +181,8 @@ public class Adaptor extends JFrame{
     
     public void loadJobs(List<Job> jobs){
     	isFinishedLoading = false;
-        System.out.println("Load Job at " + new Date());
+        startDate = new Date();
+        System.out.println("Load Job at " + startDate);
 
         result = null;
     	this.n_unfinished_part = jobs.size();
@@ -268,7 +271,9 @@ public class Adaptor extends JFrame{
     	resultLabel.setText("result: " + result.getResult());
     	loadButton.setEnabled(true);
 
-        System.out.println("Finish all jobs at " + new Date());
+        endDate = new Date();
+        System.out.println("Finish all jobs at " + endDate);
+        System.out.println("Using " + (endDate.getTime() - startDate.getTime())/1000 + " seconds");
     }
     
     private void sendJob(Job job){
