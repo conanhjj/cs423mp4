@@ -55,16 +55,17 @@ public class JobQueue implements Iterable<Job>{
     
     public Job popIfLengthExceed(int THRESHOLD, int index){
     	boolean isChanged = false;
+        Job ret = null;
     	synchronized (this) {
     		if(jobList.size() > THRESHOLD){
     			index = (index == OLDEST) ? 0 : (index == NEWEST) ? (jobList.size() -1) : index;
     			Job temp = jobList.remove(index);
     			isChanged = true;
-    			return temp;
+                ret = temp;
     		}
     	}
     	if(isChanged) adaptor.queueSizeChange();
-    	return null;
+    	return ret;
     }
 
     public boolean isEmpty() {
