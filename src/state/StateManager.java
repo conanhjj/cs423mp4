@@ -1,8 +1,6 @@
 package state;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -80,7 +78,8 @@ public class StateManager {
         {
 			//System.out.println("send current state: " + state);
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
-            objectOutput.writeObject(state);                
+            objectOutput.writeObject(state);
+            objectOutput.flush();
         } 
         catch (IOException e) 
         {

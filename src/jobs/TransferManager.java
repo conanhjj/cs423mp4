@@ -55,7 +55,8 @@ public class TransferManager {
 		try 
         {
             ObjectOutputStream objectOutput = new ObjectOutputStream(socket.getOutputStream());
-            objectOutput.writeObject(job);                
+            objectOutput.writeObject(job);
+            objectOutput.flush();
         } 
         catch (IOException e) 
         {
