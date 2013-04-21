@@ -30,6 +30,9 @@ import state.State;
 import state.StateManager;
 import util.LBConfiguration;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 public class Adaptor extends JFrame{
 	/**
@@ -47,6 +50,7 @@ public class Adaptor extends JFrame{
 	private DefaultListModel remoteListModel;
 	public int n_job_transfer = 0;
 	public int n_request = 0;
+	private final Lock mutex = new ReentrantLock(true);
 	
 	private boolean isPeriodicInformationPolicy = true;
 	
@@ -191,8 +195,10 @@ public class Adaptor extends JFrame{
     }
     
     public synchronized void addJob(Job job){
-    	localListModel.addElement(job.getID());
-    	remoteListModel.removeElement(job.getID());
+    	mutex.lock();
+    		localListModel.addElement(job.getID());
+    		remoteListModel.removeElement(job.getID());
+    	mutex.unlock();
     	
     	getJobQueue().append(job);
     }
@@ -211,9 +217,9 @@ public class Adaptor extends JFrame{
 		
 		public synchronized void checkForAvailableTransfer(){
 			double cpuUtil = hardwareMonitor.getCpuUtilization();
-			if(cpuUtil > 0.6) {
+			if(cpuUtil > 60.0) {
                 wtManager.setLowThrottling();
-            } else if(cpuUtil < 0.2) {
+            } else if(cpuUtil < 20.0) {
                 wtManager.setHighThrottling();
             }
 			localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), cpuUtil);
@@ -261,13 +267,18 @@ public class Adaptor extends JFrame{
 
         System.out.println("Finish all jobs at " + new Date());
     }
-
+    
     private synchronized void sendJob(Job job){
     	if(!job.isRequest){
     		n_job_transfer++;
-    		this.localListModel.removeElement(job.getID());
-    		if(this.localJobIDs.contains(job.getID()))
-    			this.remoteListModel.addElement(job.getID());
+    		mutex.lock();
+    			this.localListModel.removeElement(job.getID());
+    		mutex.unlock();
+    		if(this.localJobIDs.contains(job.getID())){
+    			mutex.lock();
+    				this.remoteListModel.addElement(job.getID());
+    			mutex.unlock();
+    		}
     	}else n_request++;
     	transferManager.sendJob(job);
     }
@@ -276,8 +287,10 @@ public class Adaptor extends JFrame{
     	//local job
     	if(localJobIDs.contains(job.getID())){
     		System.out.println("finished. ID: " + job.getID() +  ", n = " + this.n_unfinished_part);
-    		this.localListModel.removeElement(job.getID());
-    		this.remoteListModel.removeElement(job.getID());
+    		mutex.lock();
+    			this.localListModel.removeElement(job.getID());
+    			this.remoteListModel.removeElement(job.getID());
+    		mutex.unlock();
 	    	if(result == null)
 	    		result = job.getResult();
 	    	else
