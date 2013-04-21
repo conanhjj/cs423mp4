@@ -58,7 +58,7 @@ public class Adaptor extends JFrame{
 	HashSet<String> localJobIDs;
 	int n_unfinished_part;
 
-	
+	private boolean isFinishedLoading;
 	State localState, remoteState;
 	StateManager stateManager;
 	TransferManager transferManager;
@@ -178,6 +178,7 @@ public class Adaptor extends JFrame{
     }
     
     public void loadJobs(List<Job> jobs){
+    	isFinishedLoading = false;
         System.out.println("Load Job at " + new Date());
 
         result = null;
@@ -192,6 +193,8 @@ public class Adaptor extends JFrame{
 			localJobIDs.add(job.getID());
 			addJob(job);
 		}
+		isFinishedLoading = true;
+		queueSizeChange();
     }
     
     public synchronized void addJob(Job job){
@@ -311,7 +314,7 @@ public class Adaptor extends JFrame{
     }
     
     public void queueSizeChange(){
-    	if(stateManager.isPeriodic) return;
+    	if(stateManager.isPeriodic || ! isFinishedLoading) return;
     	localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), hardwareMonitor.getCpuUtilization());
 		stateManager.setState(localState);
 		new EventSender();
