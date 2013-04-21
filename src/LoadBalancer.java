@@ -115,7 +115,7 @@ public class LoadBalancer {
         loadJob(fileName);
     }
 
-    private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s\n";
+    private static final String FORMAT_STRING_LIST_JOB = "%-55s%-25s\n";
     public static void listJobs() {
         if(parameters.length != 1) {
             System.out.println("Wrong command format. No argument for list jobs command");
