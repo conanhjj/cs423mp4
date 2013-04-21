@@ -129,6 +129,7 @@ public class StateManager {
 					ObjectInputStream objectInput = new ObjectInputStream(stateManager.socket.getInputStream());
 	                try {
 	                    state.State state = (state.State) objectInput.readObject();
+	                    n_state_transfer++;
 	                    stateManager.setRemoteState(state);
 	                } catch (ClassNotFoundException e) {
 	                    e.printStackTrace();
