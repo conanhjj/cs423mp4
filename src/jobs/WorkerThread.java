@@ -110,9 +110,10 @@ public class WorkerThread {
             logger.error("Wrong Throttling Parameter");
             return false;
         }
-
-        RUNNING_TIME = (long) percentage * 10;
-        SLEEPING_TIME = 1000L - RUNNING_TIME;
+        synchronized (this) {
+            RUNNING_TIME = (long) percentage * 10;
+            SLEEPING_TIME = 1000L - RUNNING_TIME;
+        }
         return true;
     }
 
