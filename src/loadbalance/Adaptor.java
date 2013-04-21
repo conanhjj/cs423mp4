@@ -271,18 +271,20 @@ public class Adaptor extends JFrame{
         System.out.println("Finish all jobs at " + new Date());
     }
     
-    private synchronized void sendJob(Job job){
-    	if(!job.isRequest){
-    		n_job_transfer++;
-    		mutex.lock();
-    			this.localListModel.removeElement(job.getID());
-    		mutex.unlock();
-    		if(this.localJobIDs.contains(job.getID())){
-    			mutex.lock();
-    				this.remoteListModel.addElement(job.getID());
-    			mutex.unlock();
-    		}
-    	}else n_request++;
+    private void sendJob(Job job){
+        synchronized (this) {
+            if(!job.isRequest){
+                n_job_transfer++;
+                mutex.lock();
+                    this.localListModel.removeElement(job.getID());
+                mutex.unlock();
+                if(this.localJobIDs.contains(job.getID())){
+                    mutex.lock();
+                        this.remoteListModel.addElement(job.getID());
+                    mutex.unlock();
+                }
+            }else n_request++;
+        }
     	transferManager.sendJob(job);
     }
     
