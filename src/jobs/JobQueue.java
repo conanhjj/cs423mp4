@@ -19,10 +19,13 @@ public class JobQueue implements Iterable<Job>{
     }
 
     public void append(Job job) {
+    	boolean isChanged = false;
         synchronized (this) {
             jobList.add(job);
-            adaptor.queueSizeChange();
+            isChanged = true;
         }
+        if(isChanged)
+        	adaptor.queueSizeChange();
     }
 
     public Job peek() {
@@ -35,26 +38,32 @@ public class JobQueue implements Iterable<Job>{
     }
 
     public Job pop() {
+    	boolean isChanged = false;
+    	Job ret;
         synchronized (this) {
             if(isEmpty())
-                return null;
+                ret = null;
             else{
                 Job temp = jobList.remove(0);
-                adaptor.queueSizeChange();
-                return temp;
+                isChanged = true;
+                ret = temp;
             }
         }
+        if(isChanged) adaptor.queueSizeChange();
+        return ret;
     }
     
     public Job popIfLengthExceed(int THRESHOLD, int index){
+    	boolean isChanged = false;
     	synchronized (this) {
     		if(jobList.size() > THRESHOLD){
     			index = (index == OLDEST) ? 0 : (index == NEWEST) ? (jobList.size() -1) : index;
     			Job temp = jobList.remove(index);
-    			adaptor.queueSizeChange();
+    			isChanged = true;
     			return temp;
     		}
     	}
+    	if(isChanged) adaptor.queueSizeChange();
     	return null;
     }
 

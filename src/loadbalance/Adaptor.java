@@ -314,7 +314,17 @@ public class Adaptor extends JFrame{
     	if(stateManager.isPeriodic) return;
     	localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), hardwareMonitor.getCpuUtilization());
 		stateManager.setState(localState);
-    	stateManager.sendState();
+		new EventSender();
     	//System.out.println("queue change");
+    }
+    
+    class EventSender extends Thread{
+    	public EventSender(){
+    		start();
+    	}
+    	@Override
+    	public void run(){
+    		stateManager.sendState();
+    	}
     }
 }
