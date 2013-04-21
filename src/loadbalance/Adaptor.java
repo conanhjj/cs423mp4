@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class Adaptor extends JFrame{
 	TransferChecker transferChecker;
 	HardwareMonitor hardwareMonitor;
     WorkerThreadManager wtManager;
-	
+
 	TransferPolicy transferPolicy;
 	final int THRESHOLD = 2;
 	final int POLL_LIM = 1;
@@ -245,8 +246,10 @@ public class Adaptor extends JFrame{
     	System.out.println("result = " + result.getResult());
     	resultLabel.setText("result: " + result.getResult());
     	loadButton.setEnabled(true);
+
+        System.out.println("Finish all jobs at " + new Date());
     }
-    
+
     private synchronized void sendJob(Job job){
     	if(!job.isRequest){
     		this.localListModel.removeElement(job.getID());

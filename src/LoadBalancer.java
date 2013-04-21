@@ -9,6 +9,7 @@ import util.Util;
 
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -110,19 +111,8 @@ public class LoadBalancer {
         }
 
         String fileName = parameters[1];
+        System.out.println("Load Job at " + new Date());
         loadJob(fileName);
-//        Job job = new Job(fileName);
-//        if(!job.loadJobFromFile()) {
-//            System.out.println("Encountering error in loading jobs");
-//            return;
-//        }
-//        if(!job.saveJobToFile()) {
-//            System.out.println("Encountering error in saving jobs");
-//            return;
-//        }
-//
-//        logger.info("Successfully load job " + fileName);
-//        adaptor.getWorkerThread().addJob(job);
     }
 
     private static final String FORMAT_STRING_LIST_JOB = "%-25s%-25s\n";
@@ -138,11 +128,11 @@ public class LoadBalancer {
         if(curRunningJobs.size() != 0)
             for(Job job : curRunningJobs)
                 System.out.printf(
-                FORMAT_STRING_LIST_JOB, job.getJobName(), "Running(WorkerThread " + job.getWorkerThreadId() + ")");
+                FORMAT_STRING_LIST_JOB, job.getID(), "Running(WorkerThread " + job.getWorkerThreadId() + ")");
 
         JobQueue jobQueue = adaptor.getJobQueue();
         for(Job job : jobQueue) {
-            System.out.printf(FORMAT_STRING_LIST_JOB, job.getJobName(), "Pending");
+            System.out.printf(FORMAT_STRING_LIST_JOB, job.getID(), "Pending");
         }
         System.out.println(BAR);
     }
