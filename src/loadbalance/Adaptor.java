@@ -173,6 +173,8 @@ public class Adaptor extends JFrame{
     }
     
     public void loadJobs(List<Job> jobs){
+        System.out.println("Load Job at " + new Date());
+
         result = null;
     	this.n_unfinished_part = jobs.size();
     	System.out.println("size " + this.n_unfinished_part);
