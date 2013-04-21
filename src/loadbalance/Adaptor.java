@@ -210,15 +210,16 @@ public class Adaptor extends JFrame{
 		}
 		
 		public synchronized void checkForAvailableTransfer(){
-			localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), hardwareMonitor.getCpuUtilization());
-			stateManager.setState(localState);
-			cpuUtilLabel.setText("CPU: " + String.format("%.2f", localState.cpuUtilization) + " %");
-			throttlingLabel.setText("Throttling: " + localState.throttling + " %");
-            if(localState.cpuUtilization > 0.6) {
+			double cpuUtil = hardwareMonitor.getCpuUtilization();
+			if(cpuUtil > 0.6) {
                 wtManager.setLowThrottling();
-            } else if(localState.cpuUtilization < 0.2) {
+            } else if(cpuUtil < 0.2) {
                 wtManager.setHighThrottling();
             }
+			localState = new state.State(wtManager.getJobQueueSize(), wtManager.getThrottling(), cpuUtil);
+            stateManager.setState(localState);
+			cpuUtilLabel.setText("CPU: " + String.format("%.2f", localState.cpuUtilization) + " %");
+			throttlingLabel.setText("Throttling: " + localState.throttling + " %");
 
 			remoteState = stateManager.getRemoteState();
 
