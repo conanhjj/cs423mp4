@@ -48,7 +48,7 @@ public class Adaptor extends JFrame{
 	public int n_job_transfer = 0;
 	public int n_request = 0;
 	
-	private final boolean isPeriodicInformationPolicy = true;
+	private boolean isPeriodicInformationPolicy = true;
 	
 	JobResult result;
 	HashSet<String> localJobIDs;
@@ -70,6 +70,7 @@ public class Adaptor extends JFrame{
 		super("Load Balancer");
         wtManager= new WorkerThreadManager(this);
         wtManager.start();
+        isPeriodicInformationPolicy = !LBConfiguration.getInformationPolicy().equals(LBConfiguration.EVENT);
 		stateManager = new StateManager(serverPort, isPeriodicInformationPolicy);
 		transferManager = new TransferManager(serverPort + 1, this);
 		hardwareMonitor = new HardwareMonitor();
@@ -221,7 +222,7 @@ public class Adaptor extends JFrame{
 
 			remoteState = stateManager.getRemoteState();
 
-            String policy = LBConfiguration.getPolicy();
+            String policy = LBConfiguration.getTransferPolicy();
             if(policy.equals(LBConfiguration.RECEIVER))
                 transferPolicy = (new ReceiverInitTransferPolicy(wtManager.getJobQueue(), remoteState));
             else if(policy.equals(LBConfiguration.SENDER))

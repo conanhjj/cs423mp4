@@ -38,7 +38,7 @@ public class LBConfiguration {
     public static String SENDER = "Sender";
     public static String SYMMETRIC = "Symmetric";
 
-    public static String getPolicy() {
+    public static String getTransferPolicy() {
         String val = properties.getProperty("TransferPolicy");
         if(val == null) {
             logger.error("Couldn't find TransferPolicy, using Receiver instead");
@@ -53,6 +53,26 @@ public class LBConfiguration {
         } else {
             logger.error("Wrong value for TransferPolicy, using Receiver instead");
             return RECEIVER;
+        }
+    }
+
+    public static String EVENT = "Event";
+    public static String PERIODIC = "Periodic";
+
+    public static String getInformationPolicy() {
+        String val = properties.getProperty("InformationPolicy");
+        if(val == null) {
+            logger.error("Couldn't find InformationPolicy, using Event instead");
+            return EVENT;
+        }
+
+        if(val.equals(EVENT))
+            return EVENT;
+        else if(val.equals(PERIODIC))
+            return PERIODIC;
+        else {
+            logger.error("Wrong value for InformationPolicy, using Event instead");
+            return EVENT;
         }
     }
 }
