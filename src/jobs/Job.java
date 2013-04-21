@@ -82,7 +82,7 @@ public abstract class Job implements Serializable {
 
     public abstract boolean isFinished();
 
-    public abstract void stop();
+    public abstract void suspend(Long sleepTime);
 
     public abstract void resume();
 

@@ -56,7 +56,7 @@ public class WorkerThread {
                             getCurRunJob().run();
 
                         if(getCurRunJob().isFinished()) {
-                            System.out.println(getCurRunJob().getResult());
+                            System.out.println("Result: " + getCurRunJob().getID() + ", " + getCurRunJob().getResult());
                             if(adaptor != null)
                                 adaptor.jobFinished(getCurRunJob());
                             clearCurJob();
@@ -78,7 +78,7 @@ public class WorkerThread {
                     try {
                         getCurRunJob().resume();
                         Util.sleep(RUNNING_TIME);
-                        getCurRunJob().stop();
+                        getCurRunJob().suspend(SLEEPING_TIME);
                         Util.sleep(SLEEPING_TIME);
                     } catch (NullPointerException ex) {
                         //do nothing, it's okay when there is a NPE, since the job can be finished during waiting

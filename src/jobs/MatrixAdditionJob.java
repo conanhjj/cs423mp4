@@ -1,6 +1,8 @@
 package jobs;
 
 
+import util.Util;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -14,8 +16,11 @@ public class MatrixAdditionJob extends Job {
     private Integer row;
     private Integer column;
     private AtomicInteger count;
+    private Integer totalCount;
     private Float result;
     private AtomicBoolean interrupt;
+
+    private Long sleepTime;
 
     private float[][] matrix;
 
@@ -37,7 +42,9 @@ public class MatrixAdditionJob extends Job {
         }
         result = 0f;
         this.count = new AtomicInteger(count);
+        totalCount = this.count.get();
         interrupt = new AtomicBoolean(false);
+        sleepTime = 0L;
     }
 
     public MatrixAdditionJob(boolean isRequest) {
@@ -53,6 +60,9 @@ public class MatrixAdditionJob extends Job {
                     result += matrix[i][j];
             }
         }
+        Integer finish = totalCount - count.get();
+        System.out.println("Progress: " + getID() + ", " + (((100*finish) / totalCount)) + "%" );
+        Util.sleep(sleepTime);
     }
 
     @Override
@@ -63,7 +73,8 @@ public class MatrixAdditionJob extends Job {
     }
 
     @Override
-    public void stop() {
+    public void suspend(Long sleepTime) {
+        this.sleepTime = sleepTime;
         interrupt.set(true);
     }
 
