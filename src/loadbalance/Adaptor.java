@@ -45,6 +45,8 @@ public class Adaptor extends JFrame{
 	private JButton loadButton;
 	private DefaultListModel localListModel;
 	private DefaultListModel remoteListModel;
+	public int n_job_transfer = 0;
+	public int n_request = 0;
 	
 	private final boolean isPeriodicInformationPolicy = true;
 	
@@ -156,7 +158,7 @@ public class Adaptor extends JFrame{
     
     public synchronized void processJobRequest(){
     	if(transferPolicy == null) return;
-    	
+    	n_request++;
     	Job job = wtManager.getJobQueue().popIfLengthExceed(THRESHOLD, transferPolicy.selectionPolicy);
     	if(job != null)
     		sendJob(job);
@@ -176,6 +178,9 @@ public class Adaptor extends JFrame{
     	System.out.println("size " + this.n_unfinished_part);
     	this.localJobIDs = new HashSet<String>();
     	resultLabel.setText("result: ...processing...");
+    	n_job_transfer = 0;
+    	n_request = 0;
+    	stateManager.n_state_transfer = 0;
 		for(Job job : jobs){
 			localJobIDs.add(job.getID());
 			addJob(job);
@@ -244,6 +249,9 @@ public class Adaptor extends JFrame{
 
     private void finishedAll(){
     	System.out.println("result = " + result.getResult());
+    	System.out.println("n_job_transfer = " + n_job_transfer);
+    	System.out.println("n_request = " + n_request);
+    	System.out.println("n_state_transfer = " + stateManager.n_state_transfer);
     	resultLabel.setText("result: " + result.getResult());
     	loadButton.setEnabled(true);
 
@@ -252,10 +260,11 @@ public class Adaptor extends JFrame{
 
     private synchronized void sendJob(Job job){
     	if(!job.isRequest){
+    		n_job_transfer++;
     		this.localListModel.removeElement(job.getID());
     		if(this.localJobIDs.contains(job.getID()))
     			this.remoteListModel.addElement(job.getID());
-    	}
+    	}else n_request++;
     	transferManager.sendJob(job);
     }
     

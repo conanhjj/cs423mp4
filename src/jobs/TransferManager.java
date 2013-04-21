@@ -77,6 +77,7 @@ public class TransferManager {
 	public void receiveJob(Job job){
 		// put into job queue via Adaptor
 		System.out.println("Received Job");
+		adaptor.n_job_transfer++;
 		if(job.isFinished())
 			adaptor.jobFinished(job);
 		else

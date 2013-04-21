@@ -26,6 +26,7 @@ public class StateManager {
 	private LoopSender loopSender;
 	private Listener listener;
 	private int PORT_NO;
+	public int n_state_transfer = 0;
 	
 	public StateManager(int interval, int serverPort, boolean isPeriodic) {
 		this.interval = interval;
@@ -74,6 +75,7 @@ public class StateManager {
 	}
 	
 	public synchronized void sendState(){
+		n_state_transfer++;
 		try 
         {
 			//System.out.println("send current state: " + state);
